@@ -67,6 +67,7 @@ impl Transport for SimTransport {
     }
 }
 
+#[cfg(any(feature = "http", test))]
 fn extract_url_path(url: &str) -> &str {
     if let Some(pos) = url.find("://") {
         let after_scheme = url.get(pos.saturating_add(3)..).unwrap_or_default();

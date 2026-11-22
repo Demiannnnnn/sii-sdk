@@ -278,6 +278,27 @@ fn test_scenario_semilla_error() {
 }
 
 #[test]
+fn test_sim_transport_memory() -> TestResult {
+    let transport = SimTransport::memory();
+    let client = SiiClient::new(Ambiente::Certificacion, transport);
+    let seed = client.obtener_semilla()?;
+    assert_eq!(seed.as_str(), "0079009845665");
+    Ok(())
+}
+
+#[test]
+fn test_sim_transport_direct() -> TestResult {
+    let sim = Arc::new(SiiSimulator::new().with_scenario(Scenario::Aceptado));
+    let transport = SimTransport::direct(Arc::clone(&sim));
+    let client = SiiClient::new(Ambiente::Certificacion, transport);
+    let (signer, cert) = test_signer_and_cert()?;
+    let token = client.obtener_token(&signer, &cert)?;
+    assert_eq!(token.as_str(), "SIM_TOKEN_79009845");
+    Ok(())
+}
+
+#[test]
+#[cfg(feature = "http")]
 fn test_http_server_live_network() -> TestResult {
     let sim = Arc::new(SiiSimulator::new().with_scenario(Scenario::Aceptado));
     let server = HttpServer::bind("127.0.0.1:0")?;

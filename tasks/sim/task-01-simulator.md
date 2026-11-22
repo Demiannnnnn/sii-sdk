@@ -53,23 +53,23 @@ Exit code: 0 (formato limpio sin diferencias)
 2. `cargo clippy --workspace --all-targets --all-features -- -D warnings`:
 ```text
     Checking sii-sim v0.1.0 (/Users/demian/Documents/Github/sii-sdk-w1/crates/sii-sim)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.49s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.03s
 Exit code: 0
 ```
 
 3. `cargo clippy -p sii --no-default-features -- -D warnings`:
 ```text
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
 Exit code: 0
 ```
 
 4. `cargo test --workspace --all-features`:
 ```text
      Running unittests src/lib.rs (target/debug/deps/sii-b1b2db1e9884a8b9)
-test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.75s
+test result: ok. 45 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.88s
 
      Running tests/auth.rs (target/debug/deps/auth-b465498a04c42dc1)
-test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.32s
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.81s
 
      Running tests/caf.rs (target/debug/deps/caf-0514c646b452fc7e)
 test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
@@ -84,13 +84,13 @@ test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
      Running tests/envio.rs (target/debug/deps/envio-aa7b2266e272fc5e)
-test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.30s
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.22s
 
      Running tests/libro.rs (target/debug/deps/libro-10f95d2b933a1a5e)
-test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.67s
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.44s
 
      Running tests/signature.rs (target/debug/deps/signature-f6f5ec1f9c24e279)
-test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.98s
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.07s
 
      Running tests/smoke.rs (target/debug/deps/smoke-59a003c9fd437373)
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
@@ -102,7 +102,7 @@ test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
      Running tests/smoke.rs (target/debug/deps/smoke-cd91e8dffd563c73)
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
 
      Running unittests src/lib.rs (target/debug/deps/sii_sim-49f0dcefc595ba56)
 test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
@@ -111,10 +111,10 @@ test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
      Running tests/simulator_tests.rs (target/debug/deps/simulator_tests-6bdf48423418981b)
-test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 30.88s
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.57s
 
      Running tests/smoke.rs (target/debug/deps/smoke-86fa4b09dd25e101)
-test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
 
    Doc-tests sii
 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
@@ -122,15 +122,23 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
    Doc-tests sii_sim
 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-Total general del workspace: 140 tests unitarios y de integración + 1 doctest, todos en verde (0 fallos).
+Total general del workspace: 142 tests unitarios y de integración + 1 doctest, todos en verde (0 fallos).
 Exit code: 0
 ```
 
 5. `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --all-features`:
 ```text
  Documenting sii-sim v0.1.0 (/Users/demian/Documents/Github/sii-sdk-w1/crates/sii-sim)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.34s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.91s
 Exit code: 0
+```
+
+6. Verificación de features por defecto de `sii-sim`:
+```text
+$ cargo clippy -p sii-sim -- -D warnings
+Exit code: 0
+$ cargo test -p sii-sim
+Exit code: 0 (16 tests pasados: 3 lib, 0 main, 11 tests integración, 2 smoke tests)
 ```
 
 ### Decisiones
@@ -139,6 +147,8 @@ Exit code: 0
 - Se valida y rechaza explícitamente cualquier dirección que no sea de loopback (`127.0.0.1` / `::1`), garantizando el cumplimiento de QA-01 y RF-04.
 - Los endpoints se resuelven por coincidencia de sufijo de ruta, funcionando transparentemente con URLs canónicas del SII (`https://maullin.sii.cl/...`) o relativas/locales (`/DTEWS/...`).
 - En `crates/sii-sim/tests/smoke.rs`, se agregó `.arg("--help")` a `smoke_test_sim_bin_runs` para que el test de humo de binario verifique la compilación y ejecución de la CLI sin bloquearse esperando conexiones en el listener de red.
+- En `crates/sii-sim/src/transport.rs`, se anotó `#[cfg(any(feature = "http", test))]` sobre `extract_url_path` para evitar advertencias de dead code al compilar con features por defecto (`default = []`).
+- En `crates/sii-sim/tests/simulator_tests.rs`, se condicionó `test_http_server_live_network` con `#[cfg(feature = "http")]` y se añadieron pruebas sans-IO para `SimTransport::memory()` y `SimTransport::direct(...)`.
 
 ### Pendientes/bloqueos
 - Ninguno. La tarea está terminada y todos los criterios de aceptación y verificación están cumplidos.
