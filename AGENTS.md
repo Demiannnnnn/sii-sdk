@@ -31,6 +31,16 @@ libros de compra/venta, con un **simulador** del SII y una CLI. Workspace Cargo:
 **El stack está cerrado** (`.ai-context/architecture.md` §3). NUNCA cambies edición, MSRV, estructura de
 crates ni agregues crates al workspace sin que tu tarea lo pida.
 
+## 2b. No negociables (versión corta — lista completa en `.ai-context/constraints.md`)
+
+- **XML exacto del SII (DTE-01):** cada tipo y cada sobre se prueban contra fixtures citados de la documentación oficial; nada se inventa.
+- **Sans-IO (ADR-01, API-01):** el núcleo `sii` compila con `--no-default-features`, sin red, archivos ni reloj; la red va en `HttpTransport` (feature `http`).
+- **Firma inyectada (SIG-03):** el núcleo nunca abre certificados; recibe un `Signer`/`Certificate` (`SiiIdentity` vive tras la feature `pkcs12`).
+- **RSA-SHA1 donde el SII lo exige (TED-01):** timbre y semilla; no "mejorar" a SHA-256 ahí.
+- **Rechazo ≠ error (ADR-04, API-02):** `EstadoEnvio::Rechazado` es un valor, `Err` solo para transporte/XML/datos.
+- **Secretos jamás en el repo (SEC-01..03):** CAF, certificados y llaves de prueba autogenerados o como base64 DER reconstruido en runtime (el hook de gitleaks bloquea marcadores PEM de llaves); `Debug` redacta llaves.
+- **Dinero en `Monto` (i64) (DTE-03):** nunca `f64`.
+
 ## 3. Alcance — haz SOLO tu tarea
 
 - Trabaja **únicamente** en la tarea asignada, en el orden de `tasks/README.md`. Una tarea a la vez.
@@ -104,3 +114,13 @@ Al terminar **o** al bloquearte, DEBES:
 3. Commitear ese cambio del reporte.
 
 Reportar un bloqueo con honestidad es correcto. Ocultar un fallo, inventar resultados o declarar "terminado" sin verificar es la falta más grave posible.
+
+## 10. Comandos
+
+| Para | Comando |
+|:--|:--|
+| Todo el DoD | ver §8 |
+| Solo un test | `cargo test -p sii --test <nombre> --all-features` |
+| Núcleo sans-IO | `cargo clippy -p sii --no-default-features -- -D warnings` |
+| Con certificado real (solo el dueño, CERT-99) | `SII_CERT_PASSWORD=… sii …` — nunca en tests |
+| Revisar secretos antes de commitear | `gitleaks protect --staged` (lo corre el hook) |
