@@ -1,0 +1,63 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Demiannnnnn/sii-sdk"
+authors = ["Demian"]
+
+[workspace.dependencies]
+sii = { path = "crates/sii", version = "0.1.0", default-features = false }
+sii-sim = { path = "crates/sii-sim", version = "0.1.0" }
+sii-cli = { path = "crates/sii-cli", version = "0.1.0" }
+
+# Permitted dependencies (.ai-context/architecture.md §3)
+# XML
+quick-xml = "0.37"
+
+# Cryptography
+rsa = "0.9"
+sha1 = "0.10"
+sha2 = "0.10"
+x509-cert = "0.2"
+der = "0.7"
+pkcs8 = "0.10"
+base64 = "0.22"
+
+# Utilities & domain types
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+time = { version = "0.3", features = ["formatting", "parsing"] }
+tracing = "0.1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# Testing
+proptest = "1"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "deny"
+rust_2018_idioms = { level = "deny", priority = -1 }
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+indexing_slicing = "deny"
+float_arithmetic = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+module_name_repetitions = "allow"

@@ -3,7 +3,7 @@
 | Atributo | Detalle |
 |:--|:--|
 | **ID** | `INFRA-01` |
-| **Estado** | ⬜ pendiente |
+| **Estado** | ✅ terminada |
 | **Depende de** | — |
 | **Rama** | `dev/infra-01-workspace` |
 | **Prioridad** | P0 |
@@ -56,4 +56,109 @@ AGENTS.md §8 en verde, pegando la salida real en el Reporte.
 
 ## Reporte
 
-_(lo completa el agente)_
+### Resumen
+Se implementó el workspace Cargo raíz y el esqueleto de los tres crates (`sii`, `sii-sim`, `sii-cli`) según la especificación de `INFRA-01` y `.ai-context/architecture.md` §3. Se definieron los lints del workspace estrictos (`unsafe_code = "forbid"`, `missing_docs = "deny"`, clippy denegando `unwrap`, `expect`, `panic`, `print_stdout`, etc.), las dependencias permitidas en `[workspace.dependencies]`, las features requeridas en `crates/sii` (`http`, `pkcs12`, `serde`, `tracing`), licencias y `NOTICE` por crate, los 12 módulos requeridos en `sii`, binarios mínimos para `sii-sim` y `sii-cli` (bin `sii`), y tests de humo por crate. Todo compila y pasa las pruebas en verde con `--all-features` y con `--no-default-features`.
+
+### Archivos
+- `Cargo.toml` (workspace raíz)
+- `Cargo.lock`
+- `crates/sii/Cargo.toml`
+- `crates/sii/README.md`, `LICENSE-MIT`, `LICENSE-APACHE`, `NOTICE`
+- `crates/sii/src/lib.rs`
+- `crates/sii/src/types.rs`, `codes.rs`, `caf.rs`, `dte.rs`, `ted.rs`, `signature.rs`, `envio.rs`, `libro.rs`, `auth.rs`, `transport.rs`, `client.rs`, `error.rs`
+- `crates/sii/tests/smoke.rs`
+- `crates/sii-sim/Cargo.toml`
+- `crates/sii-sim/README.md`, `LICENSE-MIT`, `LICENSE-APACHE`, `NOTICE`
+- `crates/sii-sim/src/lib.rs`, `src/main.rs`
+- `crates/sii-sim/tests/smoke.rs`
+- `crates/sii-cli/Cargo.toml`
+- `crates/sii-cli/README.md`, `LICENSE-MIT`, `LICENSE-APACHE`, `NOTICE`
+- `crates/sii-cli/src/main.rs`
+- `crates/sii-cli/tests/smoke.rs`
+
+### Resultado real de cada comando de AGENTS.md §8
+
+1. `cargo fmt --all --check`:
+```text
+Exit code: 0 (sin salida, formato limpio)
+```
+
+2. `cargo clippy --workspace --all-targets --all-features -- -D warnings`:
+```text
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+Exit code: 0
+```
+
+3. `cargo clippy -p sii --no-default-features -- -D warnings`:
+```text
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+Exit code: 0
+```
+
+4. `cargo test --workspace --all-features`:
+```text
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running unittests src/lib.rs (target/debug/deps/sii-ebef06d3d121a4b4)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/smoke.rs (target/debug/deps/smoke-b58c7eed95a64f8b)
+running 1 test
+test smoke_test_version ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/sii-0e905d1e53ecab2a)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/smoke.rs (target/debug/deps/smoke-296afdbcc797c5ea)
+running 1 test
+test smoke_test_cli_runs ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running unittests src/lib.rs (target/debug/deps/sii_sim-618325f4116375b0)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/sii_sim-8404d4d2deb4acd7)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/smoke.rs (target/debug/deps/smoke-c856bd56c7a23419)
+running 2 tests
+test smoke_test_sim_version ... ok
+test smoke_test_sim_bin_runs ... ok
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+   Doc-tests sii
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests sii_sim
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+Exit code: 0
+```
+
+5. `RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --all-features`:
+```text
+warning: output filename collision at /Users/demian/Documents/Github/sii-sdk-pro/target/doc/sii/index.html
+  |
+  = note: the bin target `sii` in package `sii-cli v0.1.0 (/Users/demian/Documents/Github/sii-sdk-pro/crates/sii-cli)` has the same output filename as the lib target `sii` in package `sii v0.1.0 (/Users/demian/Documents/Github/sii-sdk-pro/crates/sii)`
+  = note: this is a known bug where multiple crates with the same name use the same path; see <https://github.com/rust-lang/cargo/issues/6313>
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s
+   Generated /Users/demian/Documents/Github/sii-sdk-pro/target/doc/sii/index.html and 2 other files
+Exit code: 0
+```
+
+### Decisiones
+- Se configuraron los lints con prioridad `-1` para los grupos `rust_2018_idioms`, `all` y `pedantic`, permitiendo que las reglas individuales (`unwrap_used`, `module_name_repetitions`, etc.) tengan precedencia sin advertencias de Cargo.
+- En `crates/sii/Cargo.toml`, se declararon las features opcionales vacías (`http`, `pkcs12`, `serde`, `tracing`) para que el workspace compile limpiamente con `--all-features` y con `--no-default-features` sin activar dependencias pesadas no implementadas todavía.
+- Los binarios `sii-sim` y `sii` retornan `ExitCode::SUCCESS` sin usar `println!` ni `unwrap()`.
+- Se incluyeron tests de humo de integración que verifican la constante de versión y la ejecución de los binarios.
+
+### Pendientes / bloqueos
+- Ninguno. El workspace está listo para comenzar la implementación de `CORE-01`.
+
+### Desviaciones de la spec
+- Ninguna.

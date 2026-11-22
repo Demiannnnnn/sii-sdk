@@ -1,0 +1,10 @@
+sii-sdk
+Copyright 2026 Demian
+
+SDK no oficial en Rust para los Documentos Tributarios Electrónicos (DTE) del
+Servicio de Impuestos Internos (SII) de Chile. No está afiliado, patrocinado ni
+avalado por el SII. "SII" y los nombres de formularios son de sus respectivos
+titulares; se usan solo con fines de interoperabilidad.
+
+Este producto incluye software desarrollado como parte del ecosistema raysac.
+Licenciado bajo MIT OR Apache-2.0.

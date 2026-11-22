@@ -1,0 +1,27 @@
+[package]
+name = "sii-sim"
+description = "Unofficial simulator for Chilean SII DTE endpoints and services"
+readme = "README.md"
+documentation = "https://docs.rs/sii-sim"
+keywords = ["sii", "dte", "simulator", "testing", "chile"]
+categories = ["development-tools::testing", "simulation"]
+include = ["src/**", "Cargo.toml", "README.md", "LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "sii-sim"
+path = "src/main.rs"
+
+[dependencies]
+sii = { workspace = true, default-features = false }
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lints]
+workspace = true
