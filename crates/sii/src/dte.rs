@@ -1,7 +1,7 @@
 //! DTE (Documento Tributario Electrónico) models, builders, and SII XML generation.
 //!
 //! Provides typed representations of electronic tax documents compliant with the Chilean
-//! Servicio de Impuestos Internos (SII) specifications (`DTE_v10.xsd`, `docs/dte-spec.md` §3).
+//! Servicio de Impuestos Internos (SII) specifications (`DTE_v10.xsd`, `docs/md/dte-spec.md` §3).
 //!
 //! This initial cut implements models and XML generation for:
 //! - Factura Electrónica (afecta a IVA 19 %) - Código SII 33

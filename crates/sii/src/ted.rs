@@ -1,6 +1,6 @@
 //! Electronic tax stamp (`TED`), `DD` structure, RSA-SHA1 signing, and `PDF417` data.
 //!
-//! Under Chilean SII specifications (`docs/dte-spec.md` §4, `constraints.md` TED-01, TED-02),
+//! Under Chilean SII specifications (`docs/md/dte-spec.md` §4, `constraints.md` TED-01, TED-02),
 //! every Electronic Tax Document (DTE) must include an electronic tax stamp (`<TED version="1.0">`).
 //!
 //! The stamp consists of:

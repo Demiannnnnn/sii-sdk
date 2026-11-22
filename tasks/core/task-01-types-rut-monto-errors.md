@@ -160,4 +160,4 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 - Ninguno. La tarea CORE-01 está completa y lista para ser integrada.
 
 ### Desviaciones de la spec
-- Ninguna. Se siguió estrictamente la especificación en `docs/dte-spec.md` y `.ai-context/`.
+- Ninguna. Se siguió estrictamente la especificación en `docs/md/dte-spec.md` y `.ai-context/`.

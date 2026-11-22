@@ -3,7 +3,7 @@
 Mismo formato que `transbank-SDK` y `rework-sistema-facturacion`: cada tarea tiene contexto, requerimientos
 (`RF-*`), reglas, tests, DoD y una sección `## Reporte` que completa el agente.
 
-> Antes de tomar una tarea lee `AGENTS.md`, todo `.ai-context/` y [`../.ai-context/implementation-status.md`](../.ai-context/implementation-status.md). Si el código y una tarea discrepan, `.ai-context/` y `docs/dte-spec.md` mandan sobre el pseudocódigo de la tarea; repórtalo.
+> Antes de tomar una tarea lee `AGENTS.md`, todo `.ai-context/` y [`../.ai-context/implementation-status.md`](../.ai-context/implementation-status.md). Si el código y una tarea discrepan, `.ai-context/` y `docs/md/dte-spec.md` mandan sobre el pseudocódigo de la tarea; repórtalo.
 
 ## 1. Principios
 
@@ -54,7 +54,7 @@ tasks/
 | 12 | [LIBRO-01](libro/task-01-compra-venta.md) | Libro de compra/venta (IECV) | SIG-01 | P2 | ✅ |
 | 13 | [CLI-01](cli/task-01-cli.md) | `sii-cli` (bin `sii`): armar, timbrar, firmar, enviar, estado | SIM-01 | P2 | ⬜ |
 | 14 | [CERT-LOADER-01](cert/task-01-loader-pkcs12.md) | Cargar certificado/llave desde PKCS#12/PEM (feature `pkcs12`) | SIG-01 | P2 | ✅ |
-| 15 | [DOCS-01](docs/task-01-docs-and-release-prep.md) | README de crates, `docs/release.md`, CHANGELOG, preparación crates.io | CLI-01 | P2 | ⬜ |
+| 15 | [DOCS-01](docs/task-01-docs-and-release-prep.md) | README de crates, `docs/md/release.md`, CHANGELOG, preparación crates.io | CLI-01 | P2 | ⬜ |
 | — | [CERT-99](cert/task-99-certification.md) | Certificación contra el SII real (manual, **dueño**) | DOCS-01 | P3 | ⬜ (dueño) |
 
 ## 4. Reglas de ejecución

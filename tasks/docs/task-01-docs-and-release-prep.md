@@ -12,7 +12,7 @@
 sii-sdk es **público**: destino crates.io. Preparar la documentación y los metadatos para que el dueño publique.
 ## 2. Requerimientos
 - **RF-01 README por crate** (inglés, enlace al README del repo), `keywords`/`categories`, `description`, `license`, `repository`, `readme` en cada `Cargo.toml`.
-- **RF-02 `docs/release.md`:** pasos de publicación (`cargo publish --dry-run`, orden de crates, versión), que ejecuta el **dueño** (no el agente).
+- **RF-02 `docs/md/release.md`:** pasos de publicación (`cargo publish --dry-run`, orden de crates, versión), que ejecuta el **dueño** (no el agente).
 - **RF-03 `CHANGELOG.md`:** Keep a Changelog, versión inicial.
 - **RF-04 Doctests/ejemplos** de los flujos principales en el rustdoc público.
 ## 3. Tests
@@ -24,7 +24,7 @@ AGENTS.md §8. No publicar (lo hace el dueño).
 ### Resumen
 Se completó la preparación de documentación y publicación para crates.io de todo el workspace `sii-sdk` según `DOCS-01`:
 1. **RF-01 README por crate:** Se crearon README completos y detallados en inglés para los 3 crates (`crates/sii/README.md`, `crates/sii-sim/README.md`, `crates/sii-cli/README.md`), con descripción, badges, tablas de features, ejemplos de código y enlaces al README y repositorio principal. Se verificaron metadatos en `Cargo.toml` (`description`, `readme`, `keywords`, `categories`, `license`, `repository`). Se configuró `doc = false` en `[[bin]]` de `crates/sii-cli` para resolver la colisión de nombres en `cargo doc` entre la librería `sii` y el binario `sii`.
-2. **RF-02 `docs/release.md`:** Se creó la guía de release en español para el dueño del repositorio detallando los pasos de verificación previa (DoD), preparación de versión, simulación `--dry-run`, orden estricto de publicación (1. `sii` -> 2. `sii-sim` -> 3. `sii-cli`) debido a dependencias entre crates en crates.io, creación de tags en Git y releases en GitHub, y verificación post-publicación.
+2. **RF-02 `docs/md/release.md`:** Se creó la guía de release en español para el dueño del repositorio detallando los pasos de verificación previa (DoD), preparación de versión, simulación `--dry-run`, orden estricto de publicación (1. `sii` -> 2. `sii-sim` -> 3. `sii-cli`) debido a dependencias entre crates en crates.io, creación de tags en Git y releases en GitHub, y verificación post-publicación.
 3. **RF-03 `CHANGELOG.md`:** Se creó el archivo de cambios en la raíz con formato Keep a Changelog y SemVer 2.0.0, detallando todas las funcionalidades añadidas en la versión inicial `0.1.0` para los tres crates.
 4. **RF-04 Doctests:** Se agregaron ejemplos ejecutables (doctests) en `crates/sii/src/lib.rs` (construcción de factura, aritmética monetaria con RUT, consulta de estado con `MemoryTransport`), `types.rs` (`compute_dv`, `Rut::parse`, `Monto::from_pesos`, `Monto::iva_19`), `dte.rs` (`FacturaAfectaBuilder`, `NotaCreditoBuilder`), `envio.rs` (`EnvioDte`), `libro.rs` (`LibroCompraVenta`), `signature.rs` (`verify`) y `crates/sii-sim/src/lib.rs` (flujo simulador + cliente). Todos los 14 doctests pasan en verde.
 
@@ -33,7 +33,7 @@ Se completó la preparación de documentación y publicación para crates.io de 
 - `crates/sii/README.md`
 - `crates/sii-sim/README.md`
 - `crates/sii-cli/README.md`
-- `docs/release.md`
+- `docs/md/release.md`
 - `CHANGELOG.md`
 - `crates/sii/src/lib.rs`
 - `crates/sii/src/types.rs`
@@ -131,7 +131,7 @@ Exit code: 0
 ### Decisiones
 - Se configuró `doc = false` en `[[bin]]` dentro de `crates/sii-cli/Cargo.toml` para resolver la advertencia conocida de colisión de nombre de archivo (`target/doc/sii/index.html`) entre la librería `sii` y el binario `sii`.
 - Los doctests de `sii` y `sii-sim` se diseñaron para ejecutarse completamente en memoria utilizando `MemoryTransport` y `SimTransport::direct`, sin requerir archivos en disco ni conexión a red (cumpliendo estrictamente con ADR-01 y QA-01).
-- `docs/release.md` destaca el orden estricto de publicación (1. `sii`, 2. `sii-sim`, 3. `sii-cli`), ya que `sii-sim` y `sii-cli` dependen de `sii` y crates.io debe indexar `sii` antes de que los demás puedan publicarse.
+- `docs/md/release.md` destaca el orden estricto de publicación (1. `sii`, 2. `sii-sim`, 3. `sii-cli`), ya que `sii-sim` y `sii-cli` dependen de `sii` y crates.io debe indexar `sii` antes de que los demás puedan publicarse.
 
 ### Pendientes / bloqueos
 - Ninguno en cuanto a código ni documentación. El workspace está listo para la certificación contra el ambiente real del SII (`tasks/cert/task-99-certification.md`), que corresponde ejecutar manualmente al dueño con su certificado digital y CAF reales.

@@ -1,6 +1,6 @@
 //! Folio authorization (CAF) parsing, key extraction, and validation.
 //!
-//! Under the Chilean SII specification (`docs/dte-spec.md` §5, `constraints.md` CAF-01),
+//! Under the Chilean SII specification (`docs/md/dte-spec.md` §5, `constraints.md` CAF-01),
 //! a CAF (`Código de Autorización de Folios`) is delivered as an XML document
 //! containing the authorized folio range for a specific DTE type and taxpayer,
 //! the SII digital signature (`FRMA`) over authorization details (`DA`), and the

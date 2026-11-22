@@ -17,9 +17,9 @@
 2. `.ai-context/README.md` y **todos** los archivos que indica (domain, architecture, constraints, conventions, security-model, public-api, implementation-status).
 3. `tasks/README.md` y el archivo de **tu** tarea.
    - Si retomas el proyecto en una sesión o equipo nuevo, lee primero [`.ai-context/handoff.md`](.ai-context/handoff.md).
-4. Los `docs/` que tu tarea referencia. **Siempre** [`docs/dte-spec.md`](docs/dte-spec.md) si tocas DTE, firma, timbre, folios, envíos, libros o el simulador.
+4. Los `docs/` que tu tarea referencia. **Siempre** [`docs/md/dte-spec.md`](docs/md/dte-spec.md) si tocas DTE, firma, timbre, folios, envíos, libros o el simulador.
 
-Si algo es ambiguo, contradictorio o falta para tu tarea: **no inventes requisitos ni formatos del SII**. Toma la opción más conservadora que cumpla `.ai-context/` y `docs/dte-spec.md`, y repórtala en "Decisiones".
+Si algo es ambiguo, contradictorio o falta para tu tarea: **no inventes requisitos ni formatos del SII**. Toma la opción más conservadora que cumpla `.ai-context/` y `docs/md/dte-spec.md`, y repórtala en "Decisiones".
 
 ## 2. Proyecto en una línea
 
@@ -47,6 +47,7 @@ crates ni agregues crates al workspace sin que tu tarea lo pida.
 - NUNCA hagas refactors, renombres o "mejoras" fuera del alcance. NUNCA implementes por adelantado funcionalidades de otras tareas.
 - Si necesitas cambiar algo fuera del alcance para completar la tarea: hazlo **mínimo** y justifícalo en el reporte. Si es grande, detente y repórtalo (`blocked`).
 - **Alcance del sistema de archivos:** solo este repositorio. Los repos hermanos (`../rework-sistema-facturacion`, `../transbank-SDK`) se pueden **leer** como referencia; NUNCA modificarlos ni ejecutar git en ellos salvo lectura. La documentación pública del SII se puede leer como referencia (§7, LEG-*).
+- **Mantenimiento de documentación (.ai-context/docs-standard.md §6):** toda tarea que cambie comportamiento, API, modelo de datos o despliegue actualiza los diagramas `.puml` (`docs/diagramas/fuentes/`) y los informes afectados (`docs/informes/`), y corre `docs/build-docs.sh` (con verificación `docs/build-docs.sh --check`).
 
 ## 4. Git y ramas (reglas del dueño — sin excepciones)
 
@@ -89,7 +90,7 @@ crates ni agregues crates al workspace sin que tu tarea lo pida.
 - NUNCA ejecutes comandos destructivos: `rm -rf` fuera de `target/`; `git clean -fdx`; nada fuera del repo.
 - NUNCA hagas peticiones de red al SII real ni a ningún servicio externo en tests ni en tareas: solo el simulador (`sii-sim`) o transportes en memoria. La certificación contra el ambiente real del SII la hace el dueño (`tasks/cert/`).
 - NUNCA escribas en el repo certificados reales, llaves privadas reales, CAF reales del dueño ni RUT/credenciales reales. Usa certificados y CAF de **prueba autogenerados** o fixtures evidentes de ejemplo. Todo secreto va por variable de entorno o archivo ignorado; NUNCA se versiona.
-- **Licencias (LEG-01…04):** NUNCA copies código de bibliotecas DTE existentes (LibreDTE u otras) ni de proyectos con licencia incompatible (GPL, sin licencia). Se implementa desde `docs/dte-spec.md` y la documentación pública del SII. Si portas datos concretos (tablas de códigos, ejemplos de XML del SII), cítalo en un comentario con la fuente.
+- **Licencias (LEG-01…04):** NUNCA copies código de bibliotecas DTE existentes (LibreDTE u otras) ni de proyectos con licencia incompatible (GPL, sin licencia). Se implementa desde `docs/md/dte-spec.md` y la documentación pública del SII. Si portas datos concretos (tablas de códigos, ejemplos de XML del SII), cítalo en un comentario con la fuente.
 
 ## 8. Definición de "terminado"
 

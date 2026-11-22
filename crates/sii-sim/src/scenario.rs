@@ -1,4 +1,4 @@
-//! Scenario definition and configuration for the SII simulator (`docs/simulator-spec.md` §2).
+//! Scenario definition and configuration for the SII simulator (`docs/md/simulator-spec.md` §2).
 
 use crate::error::{Result, SimError};
 use serde::{Deserialize, Serialize};

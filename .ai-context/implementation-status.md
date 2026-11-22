@@ -23,7 +23,7 @@ Qué existe en el código hoy vs. lo que el SDK debe ser. Lo mantiene el orquest
 | `transport` + `client` (`SiiClient`, `MemoryTransport`, `HttpTransport` feature `http` con `ureq`) | TRANSPORT-01 | ✅ | `EstadoEnvio` como valor (ADR-04) |
 | `sii-sim` (simulador) | SIM-01 | ⬜ | crate solo con esqueleto |
 | `sii-cli` (bin `sii`) | CLI-01 | ⬜ | crate solo con esqueleto |
-| README por crate, `docs/release.md`, CHANGELOG | DOCS-01 | ⬜ | |
+| README por crate, `docs/md/release.md`, CHANGELOG | DOCS-01 | ⬜ | |
 | Certificación real contra maullin | CERT-99 | ⬜ (dueño) | |
 
 ## Contrato del simulador (insumo para SIM-01)

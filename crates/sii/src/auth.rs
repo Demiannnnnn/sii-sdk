@@ -1,6 +1,6 @@
 //! SII authentication, seed acquisition, and session token management.
 //!
-//! Implements Chilean SII authentication protocol (`docs/dte-spec.md` §7, AUTH-01):
+//! Implements Chilean SII authentication protocol (`docs/md/dte-spec.md` §7, AUTH-01):
 //! 1. Acquire seed (`Semilla`) from `crTicket.getSeed` / `CrSeed.jws`.
 //! 2. Digitally sign the seed using enveloped `XMLDSig` over `<getToken>` (`firmar_semilla`).
 //! 3. Exchange signed seed for session token (`Token`) via `GetTokenFromSeed.jws`.
@@ -341,7 +341,7 @@ impl fmt::Debug for RespuestaToken {
 
 /// Signs an SII authentication seed (`Semilla`) using `XMLDSig` to generate a [`SolicitudToken`].
 ///
-/// Implements Chilean SII `XMLDSig` authentication standard (`docs/dte-spec.md` §7, RF-02):
+/// Implements Chilean SII `XMLDSig` authentication standard (`docs/md/dte-spec.md` §7, RF-02):
 /// Constructs `<getToken><item><Semilla>...</Semilla></item></getToken>` and applies an
 /// enveloped `XMLDSig` signature using RSA-SHA1 with `URI=""`.
 /// The resulting signed XML is reproducible and deterministic given the same seed and key.

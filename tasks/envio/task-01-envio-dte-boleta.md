@@ -9,7 +9,7 @@
 | **Prioridad** | P1 |
 
 ## 1. Contexto
-`docs/dte-spec.md` §7. El sobre agrupa DTE del mismo emisor, con carátula y firma propia.
+`docs/md/dte-spec.md` §7. El sobre agrupa DTE del mismo emisor, con carátula y firma propia.
 
 ## 2. Requerimientos
 - **RF-01 EnvioDTE:** `<SetDTE>` con `Caratula` (RutEmisor, RutEnvia, RutReceptor=SII, FchResol, NroResol, TmstFirmaEnv, SubTotDTE por tipo) y 1..n `<DTE>` firmados; firma XMLDSig del sobre (SIG-01). Respeta el límite de DTE por envío del SII.

@@ -21,10 +21,10 @@ Estos archivos son **de solo lectura para los agentes** (AGENTS.md §5). Si algo
 
 | Documento | Ubicación |
 |:--|:--|
-| Formato DTE (normativo: tipos, esquema XML, timbre, firma, folios, envío, libros, auth) | [`docs/dte-spec.md`](../docs/dte-spec.md) |
-| Simulador del SII (endpoints, escenarios) | [`docs/simulator-spec.md`](../docs/simulator-spec.md) *(lo crea SIM-01)* |
-| Certificación contra el ambiente real del SII (manual, dueño) | [`docs/certification.md`](../docs/certification.md) *(lo crea CERT-01)* |
-| Publicación en crates.io | [`docs/release.md`](../docs/release.md) *(lo crea DOCS-01)* |
+| Formato DTE (normativo: tipos, esquema XML, timbre, firma, folios, envío, libros, auth) | [`docs/md/dte-spec.md`](../docs/md/dte-spec.md) |
+| Simulador del SII (endpoints, escenarios) | [`docs/md/simulator-spec.md`](../docs/md/simulator-spec.md) *(lo crea SIM-01)* |
+| Certificación contra el ambiente real del SII (manual, dueño) | [`docs/md/certification.md`](../docs/md/certification.md) *(lo crea CERT-01)* |
+| Publicación en crates.io | [`docs/md/release.md`](../docs/md/release.md) *(lo crea DOCS-01)* |
 | Plan de tareas | [`tasks/README.md`](../tasks/README.md) |
 | Proyecto que consumirá el SDK (solo lectura) | `../rework-sistema-facturacion/` (facturación electrónica) |
 | Gemelo de referencia (estructura, no copiar dominio) | `../transbank-SDK/` |

@@ -7,7 +7,7 @@ Tú (Claude Code) eres el **orquestador** de este repositorio, no el implementad
 - **agy implementa. Tú no escribes código del producto** (nada bajo `crates/`, `Cargo.toml`, `Cargo.lock`, `.github/`). Diseñas, divides en tareas, lanzas agy, supervisas, revisas, pruebas, analizas y apruebas o rechazas.
 - Delegas toda implementación, incluidas las correcciones de una revisión, a agy con `tools/orchestration/` (archivo de notas + relanzar en la misma rama).
 - **Excepción (dueño):** si la cuota de agy está agotada (`tools/orchestration/usage.sh`), implementas tú las tareas en cola hasta llegar al 80 % de tu ventana de 5 horas, con el mismo flujo (rama `dev/*`, `validate.sh`, revisión, merge). Cuando agy se recupera, vuelve a implementar agy.
-- Revisa de verdad: lee el diff y el Reporte, corre los comandos de AGENTS.md §8 y agrega verificaciones propias (IDs de `constraints.md`, tests que de verdad ejercitan el comportamiento, XML contra `docs/dte-spec.md`). Una tarea se acepta solo con evidencia, nunca por la palabra de agy.
+- Revisa de verdad: lee el diff y el Reporte, corre los comandos de AGENTS.md §8 y agrega verificaciones propias (IDs de `constraints.md`, tests que de verdad ejercitan el comportamiento, XML contra `docs/md/dte-spec.md`). Una tarea se acepta solo con evidencia, nunca por la palabra de agy.
 
 ## Lo que puedes escribir
 

@@ -1,7 +1,7 @@
 //! `XMLDSig` digital signatures, C14N canonicalization, and `Signer`/`Certificate` traits.
 //!
 //! Implements W3C XML Digital Signature standard compliant with Chilean SII
-//! requirements (`docs/dte-spec.md` §6, `constraints.md` SIG-01..03, ADR-02).
+//! requirements (`docs/md/dte-spec.md` §6, `constraints.md` SIG-01..03, ADR-02).
 //!
 //! The digital signature is applied as an **enveloped** `XMLDSig` signature targeting
 //! `<Documento ID="...">` or similar payload blocks, normalized with Canonical XML 1.0 (C14N).

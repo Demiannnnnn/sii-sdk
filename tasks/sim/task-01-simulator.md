@@ -13,7 +13,7 @@ Gemelo del simulador de transbank-SDK. Imita los endpoints del SII para desarrol
 ## 2. Requerimientos
 - **RF-01 Endpoints:** semilla, token, upload (devuelve TrackID), consulta de estado. Respuestas deterministas y configurables por escenario (aceptado, rechazado, en proceso, token inválido).
 - **RF-02 lib + bin:** `sii-sim` como lib (para tests, implementando/complementando `Transport`) y bin `sii-sim` (servidor local TCP/HTTP sobre 127.0.0.1).
-- **RF-03 Escenarios:** definidos en datos (JSON/código), documentados en `docs/simulator-spec.md` (crear este doc).
+- **RF-03 Escenarios:** definidos en datos (JSON/código), documentados en `docs/md/simulator-spec.md` (crear este doc).
 - **RF-04 Sin red externa:** solo 127.0.0.1 (QA-01). El bin imprime con `std::io::Write`.
 ## 3. Tests
 `client` contra el simulador cubriendo aceptado/rechazado/en proceso; estado por TrackID.
@@ -25,7 +25,7 @@ AGENTS.md §8.
 Se implementó completamente el simulador de servicios del SII `sii-sim` (biblioteca sans-IO y binario servidor HTTP local sobre `127.0.0.1`) según los requerimientos RF-01..04 de SIM-01:
 - **RF-01 Endpoints:** Se implementaron los 4 endpoints principales del SII (`CrSeed.jws` GET, `GetTokenFromSeed.jws` POST, `DTEUpload` POST multipart con cookie, `QueryEstUp.jws` POST SOAP). Las respuestas son deterministas y fieles a los esquemas y fixtures oficiales del SII, con respuestas configurables por escenario (aceptado, rechazado, en proceso, token inválido, error de subida, error de semilla).
 - **RF-02 lib + bin:** `sii-sim` exporta `SiiSimulator` que implementa `sii::transport::Transport` directamente (sans-IO para tests inmediatos en memoria), `SimTransport` (modo directo o HTTP con reescritura de endpoints), `HttpServer` (servidor TCP/HTTP sobre loopback) y el binario CLI `sii-sim`.
-- **RF-03 Escenarios:** Enum `Scenario` con soporte de parsing de CLI y deserialización, `ScenarioConfig` con soporte JSON completo (`from_json` / `to_json_pretty`) y sobreescritura de estados por Track ID (`track_statuses`). Se documentó la especificación técnica completa en `docs/simulator-spec.md`.
+- **RF-03 Escenarios:** Enum `Scenario` con soporte de parsing de CLI y deserialización, `ScenarioConfig` con soporte JSON completo (`from_json` / `to_json_pretty`) y sobreescritura de estados por Track ID (`track_statuses`). Se documentó la especificación técnica completa en `docs/md/simulator-spec.md`.
 - **RF-04 Sin red externa:** Validación estricta que rechaza cualquier dirección que no sea loopback `127.0.0.1` (QA-01). El binario imprime con `std::io::Write` sobre `stdout().lock()` sin macros de impresión directa.
 
 ### Archivos
@@ -40,7 +40,7 @@ Se implementó completamente el simulador de servicios del SII `sii-sim` (biblio
 - `crates/sii-sim/src/transport.rs`
 - `crates/sii-sim/tests/simulator_tests.rs`
 - `crates/sii-sim/tests/smoke.rs`
-- `docs/simulator-spec.md`
+- `docs/md/simulator-spec.md`
 - `tasks/sim/task-01-simulator.md`
 
 ### Resultado real de cada comando de AGENTS.md §8

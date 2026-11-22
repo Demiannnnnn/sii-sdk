@@ -76,7 +76,7 @@ El crate `sii` DEBE compilar y pasar tests con `--no-default-features` (API-01).
 
 ## 7. Documentación y versión
 
-- `CHANGELOG.md` Keep a Changelog; versión en `[workspace.package]`. La publicación la hace el dueño (`docs/release.md`).
+- `CHANGELOG.md` Keep a Changelog; versión en `[workspace.package]`. La publicación la hace el dueño (`docs/md/release.md`).
 
 ## 8. Formato del reporte de tarea
 

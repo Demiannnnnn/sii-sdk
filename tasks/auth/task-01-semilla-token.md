@@ -9,7 +9,7 @@
 | **Prioridad** | P1 |
 
 ## 1. Contexto
-`docs/dte-spec.md` §7 (autenticación). Modelo sans-IO: construir la solicitud de token firmando la semilla; el transporte lo hace TRANSPORT-01.
+`docs/md/dte-spec.md` §7 (autenticación). Modelo sans-IO: construir la solicitud de token firmando la semilla; el transporte lo hace TRANSPORT-01.
 ## 2. Requerimientos
 - **RF-01 Semilla:** tipos para la respuesta de semilla del SII y su parseo.
 - **RF-02 Firma semilla:** `firmar_semilla(semilla, &dyn Signer) -> SolicitudToken` (XMLDSig sobre `getToken/item/Semilla`), reproducible.
@@ -21,7 +21,7 @@ AGENTS.md §8. `--no-default-features` ok (sans-IO).
 ## Reporte
 
 ### Resumen
-- Se implementó la capa de autenticación sans-IO (`sii::auth`) conforme a la especificación del SII (`docs/dte-spec.md` §7, AUTH-01).
+- Se implementó la capa de autenticación sans-IO (`sii::auth`) conforme a la especificación del SII (`docs/md/dte-spec.md` §7, AUTH-01).
 - **Semilla (RF-01):** Nuevo tipo `Semilla` para representar y parsear la semilla retornada por `CrSeed.jws`/`crTicket.getSeed`. Método `parse_xml` y `RespuestaSemilla` que maneja estados de éxito ("00") y error del SII, tolerante a namespaces (`SII:` o raíz estándar).
 - **Firma Semilla (RF-02):** Implementación de `firmar_semilla` y `Semilla::firmar`. Genera el documento XML `<getToken><item><Semilla>...</Semilla></item></getToken>` con firma digital enveloped XMLDSig conforme a las exigencias del SII (algoritmo RSA-SHA1, C14N 1.0, `Reference URI=""`, `KeyInfo` con `RSAKeyValue` y certificado X.509 en base64). La firma es 100 % determinista y reproducible dados la misma semilla y clave privada.
 - **Token (RF-03, SEC-02):** Nuevo tipo `Token` y `RespuestaToken` para parsear la respuesta de `GetTokenFromSeed.jws`. `Token` implementa `fmt::Debug` y `fmt::Display` con valor redactado (`[REDACTED]`), previniendo fugas accidentales en logs o trazas. Para construir headers de transporte se proveen `.as_str()` y `.valor()`.
