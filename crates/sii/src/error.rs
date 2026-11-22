@@ -23,4 +23,31 @@ pub enum Error {
     /// Invalid environment specification.
     #[error("invalid environment: {0}")]
     InvalidAmbiente(String),
+
+    /// Folio number is outside the authorized CAF range [min, max] (CAF-01).
+    #[error("folio {folio} is outside authorized CAF range [{min}, {max}]")]
+    FolioOutOfRange {
+        /// The requested folio number.
+        folio: u64,
+        /// The minimum authorized folio.
+        min: u64,
+        /// The maximum authorized folio.
+        max: u64,
+    },
+
+    /// CAF digital signature (FRMA) verification failed (CAF-01).
+    #[error("CAF digital signature verification failed: {0}")]
+    CafSignature(String),
+
+    /// Invalid CAF structure or contents.
+    #[error("invalid CAF: {0}")]
+    InvalidCaf(String),
+
+    /// XML parsing or serialization error.
+    #[error("XML error: {0}")]
+    Xml(String),
+
+    /// Cryptographic operation error (RSA, hashing, key parsing).
+    #[error("cryptographic error: {0}")]
+    Crypto(String),
 }

@@ -16,8 +16,10 @@ pub mod ted;
 pub mod transport;
 pub mod types;
 
+pub use caf::Caf;
 pub use codes::{Ambiente, TipoDte};
 pub use error::{Error, Result};
+pub use signature::Signer;
 pub use types::{Monto, Rut};
 
 /// Current crate version.
