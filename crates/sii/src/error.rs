@@ -43,9 +43,17 @@ pub enum Error {
     #[error("invalid CAF: {0}")]
     InvalidCaf(String),
 
+    /// DTE validation error (business or schema rules violated).
+    #[error("DTE validation error: {0}")]
+    DteValidation(String),
+
     /// XML parsing or serialization error.
     #[error("XML error: {0}")]
     Xml(String),
+
+    /// Invalid date format or value.
+    #[error("invalid date: {0}")]
+    InvalidDate(String),
 
     /// Cryptographic operation error (RSA, hashing, key parsing).
     #[error("cryptographic error: {0}")]
