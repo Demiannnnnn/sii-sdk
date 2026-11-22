@@ -7,9 +7,11 @@
 //! - Factura Electrónica (afecta a IVA 19 %) - Código SII 33
 //! - Factura No Afecta o Exenta Electrónica - Código SII 34
 
+use crate::caf::Caf;
 use crate::codes::TipoDte;
 use crate::error::Error;
-use crate::types::{Monto, Rut};
+use crate::ted::{Dd, Ted};
+use crate::types::{Clock, Monto, Rut};
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
 use quick_xml::writer::Writer;
 use std::io::Cursor;
@@ -624,6 +626,172 @@ impl Dte {
     #[must_use]
     pub const fn exento(&self) -> Option<Monto> {
         self.encabezado.totales.mnt_exe
+    }
+
+    /// Applies an electronic tax stamp (TED) using the provided CAF, folio, and clock (ADR-01, TED-01).
+    ///
+    /// Validates that:
+    /// - The folio is within the CAF's authorized range `[min, max]` (CAF-01).
+    /// - The CAF document type matches this DTE's document type.
+    /// - The CAF issuer RUT matches this DTE's issuer RUT.
+    /// - The DTE has at least one detail line item.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::FolioOutOfRange`] if `folio` is outside the CAF authorized range.
+    /// Returns [`Error::DteValidation`] if CAF document type or issuer RUT does not match,
+    /// or if the document has no details.
+    /// Returns [`Error::Crypto`] if digital signing fails.
+    pub fn timbrar(&self, caf: &Caf, folio: u64, clock: &impl Clock) -> Result<DteTimbrado, Error> {
+        DteTimbrado::new(self, caf, folio, clock)
+    }
+}
+
+/// Electronic Tax Document stamped with an electronic tax stamp (`TED`).
+///
+/// Encapsulates a validated [`Dte`] and its [`Ted`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DteTimbrado {
+    dte: Dte,
+    ted: Ted,
+}
+
+impl DteTimbrado {
+    /// Creates a new `DteTimbrado` by applying an electronic tax stamp (`TED`) to a DTE.
+    ///
+    /// Validates that:
+    /// - The folio is within the CAF's authorized range `[min, max]` (CAF-01).
+    /// - The CAF document type matches this DTE's document type.
+    /// - The CAF issuer RUT matches this DTE's issuer RUT.
+    /// - The DTE has at least one detail line item.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::FolioOutOfRange`] if `folio` is outside the CAF authorized range.
+    /// Returns [`Error::DteValidation`] if CAF document type or issuer RUT does not match,
+    /// or if the document has no details.
+    /// Returns [`Error::Crypto`] if digital signing fails.
+    pub fn new(dte: &Dte, caf: &Caf, folio: u64, clock: &impl Clock) -> Result<Self, Error> {
+        caf.verificar_folio(folio)?;
+
+        if caf.tipo() != dte.tipo() {
+            return Err(Error::DteValidation(format!(
+                "CAF document type ({}) does not match DTE type ({})",
+                caf.tipo(),
+                dte.tipo()
+            )));
+        }
+
+        if caf.emisor_rut() != &dte.encabezado.emisor.rut_emisor {
+            return Err(Error::DteValidation(format!(
+                "CAF issuer RUT ({}) does not match DTE issuer RUT ({})",
+                caf.emisor_rut(),
+                dte.encabezado.emisor.rut_emisor
+            )));
+        }
+
+        if dte.detalles.is_empty() {
+            return Err(Error::DteValidation(
+                "at least one detail line is required to stamp DTE".into(),
+            ));
+        }
+
+        let mut stamped_dte = dte.clone();
+        if stamped_dte.encabezado.id_doc.folio != folio {
+            stamped_dte.encabezado.id_doc.folio = folio;
+            stamped_dte.id = format!("F{}T{}", folio, dte.tipo().code());
+        }
+
+        let dd = Dd::from_dte(&stamped_dte, caf, folio, &clock.now())?;
+        let ted = Ted::new(dd, caf)?;
+
+        Ok(Self {
+            dte: stamped_dte,
+            ted,
+        })
+    }
+
+    /// Returns a reference to the underlying DTE.
+    #[inline]
+    #[must_use]
+    pub const fn dte(&self) -> &Dte {
+        &self.dte
+    }
+
+    /// Returns a reference to the electronic tax stamp (TED).
+    #[inline]
+    #[must_use]
+    pub const fn ted(&self) -> &Ted {
+        &self.ted
+    }
+
+    /// Returns the exact serialized `<TED>` bytes required for generating the PDF417 2D barcode (ADR-06, TED-02).
+    #[inline]
+    #[must_use]
+    pub fn ted_pdf417_data(&self) -> &[u8] {
+        self.ted.pdf417_data()
+    }
+
+    /// Returns the document folio number.
+    #[inline]
+    #[must_use]
+    pub const fn folio(&self) -> u64 {
+        self.dte.folio()
+    }
+
+    /// Returns the document type.
+    #[inline]
+    #[must_use]
+    pub const fn tipo(&self) -> TipoDte {
+        self.dte.tipo()
+    }
+
+    /// Returns the internal document ID attribute string.
+    #[inline]
+    #[must_use]
+    pub fn id(&self) -> &str {
+        self.dte.id()
+    }
+
+    /// Serializes the stamped DTE to XML (`<DTE version="1.0">...<Documento ID="...">...<TED>...</TED></Documento></DTE>`).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Error::Xml`] if serialization fails.
+    pub fn to_xml(&self) -> Result<Vec<u8>, Error> {
+        let mut writer = Writer::new(Cursor::new(Vec::new()));
+
+        let mut dte_start = BytesStart::new("DTE");
+        dte_start.push_attribute(("version", "1.0"));
+        writer
+            .write_event(Event::Start(dte_start))
+            .map_err(|e| Error::Xml(e.to_string()))?;
+
+        let mut doc_start = BytesStart::new("Documento");
+        doc_start.push_attribute(("ID", self.dte.id.as_str()));
+        writer
+            .write_event(Event::Start(doc_start))
+            .map_err(|e| Error::Xml(e.to_string()))?;
+
+        write_encabezado(&mut writer, &self.dte.encabezado)?;
+
+        for detalle in &self.dte.detalles {
+            write_detalle(&mut writer, detalle)?;
+        }
+
+        // Insert the raw TED XML into writer cursor
+        std::io::Write::write_all(writer.get_mut(), self.ted.raw_ted())
+            .map_err(|e| Error::Xml(e.to_string()))?;
+
+        writer
+            .write_event(Event::End(BytesEnd::new("Documento")))
+            .map_err(|e| Error::Xml(e.to_string()))?;
+
+        writer
+            .write_event(Event::End(BytesEnd::new("DTE")))
+            .map_err(|e| Error::Xml(e.to_string()))?;
+
+        Ok(writer.into_inner().into_inner())
     }
 }
 
