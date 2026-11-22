@@ -23,6 +23,10 @@ tracing = []
 [dependencies]
 thiserror = { workspace = true }
 serde = { workspace = true, optional = true }
+quick-xml = { workspace = true }
+rsa = { workspace = true }
+sha1 = { workspace = true, features = ["oid"] }
+base64 = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
