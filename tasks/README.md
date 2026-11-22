@@ -51,7 +51,7 @@ tasks/
 | 9 | [AUTH-01](auth/task-01-semilla-token.md) | Semilla/token del SII (modelo + firma de la semilla) | SIG-01 | P1 | ✅ |
 | 10 | [TRANSPORT-01](transport/task-01-transport-client-http.md) | `Transport`, `SiiClient`, `HttpTransport` (feature `http`), estado | ENVIO-01, AUTH-01 | P1 | ⬜ |
 | 11 | [SIM-01](sim/task-01-simulator.md) | `sii-sim`: simulador de los endpoints del SII | TRANSPORT-01 | P1 | ⬜ |
-| 12 | [LIBRO-01](libro/task-01-compra-venta.md) | Libro de compra/venta (IECV) | SIG-01 | P2 | ⬜ |
+| 12 | [LIBRO-01](libro/task-01-compra-venta.md) | Libro de compra/venta (IECV) | SIG-01 | P2 | ✅ |
 | 13 | [CLI-01](cli/task-01-cli.md) | `sii-cli` (bin `sii`): armar, timbrar, firmar, enviar, estado | SIM-01 | P2 | ⬜ |
 | 14 | [CERT-LOADER-01](cert/task-01-loader-pkcs12.md) | Cargar certificado/llave desde PKCS#12/PEM (feature `pkcs12`) | SIG-01 | P2 | ✅ |
 | 15 | [DOCS-01](docs/task-01-docs-and-release-prep.md) | README de crates, `docs/release.md`, CHANGELOG, preparación crates.io | CLI-01 | P2 | ⬜ |
