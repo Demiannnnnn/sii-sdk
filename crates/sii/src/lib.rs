@@ -19,8 +19,9 @@ pub mod types;
 pub use caf::Caf;
 pub use codes::{Ambiente, TipoDte};
 pub use dte::{
-    CdgItem, Detalle, Dte, DteTimbrado, Emisor, Encabezado, FacturaAfectaBuilder, FacturaBuilder,
-    FacturaExentaBuilder, IdDoc, Receptor, Totales,
+    BoletaBuilder, BoletaExentaBuilder, CdgItem, Chofer, Detalle, Dte, DteTimbrado, Emisor,
+    Encabezado, FacturaAfectaBuilder, FacturaBuilder, FacturaExentaBuilder, GuiaDespachoBuilder,
+    IdDoc, NotaCreditoBuilder, NotaDebitoBuilder, Receptor, Referencia, Totales, Transporte,
 };
 pub use error::{Error, Result};
 pub use signature::{

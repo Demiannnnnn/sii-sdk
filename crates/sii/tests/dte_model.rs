@@ -4,7 +4,7 @@ use quick_xml::events::Event;
 use quick_xml::reader::Reader;
 use quick_xml::writer::Writer;
 use sii::codes::TipoDte;
-use sii::dte::{Detalle, Dte, Emisor, Receptor};
+use sii::dte::{Chofer, Detalle, Dte, Emisor, Receptor, Transporte};
 use sii::error::Error;
 use sii::types::{Monto, Rut};
 use std::io::Cursor;
@@ -474,4 +474,573 @@ fn test_serde_json_roundtrip() {
         serde_json::from_str(&json).expect("deserialize from JSON must succeed");
 
     assert_eq!(dte, deserialized);
+}
+
+#[test]
+fn test_serialize_dte_39_against_fixture() {
+    let fixture_raw = include_bytes!("fixtures/dte-39.xml");
+    let expected_canonical = canonicalize_xml(fixture_raw).unwrap();
+
+    let dte = Dte::boleta()
+        .folio(200)
+        .fch_emis_str("2026-10-21")
+        .expect("valid date")
+        .emisor(sample_emisor().unwrap())
+        .item(
+            Detalle::new(1, "Teclado mecanico", Monto::from_pesos(50_000))
+                .codigo("INT1", "PROD-39")
+                .qty(1)
+                .prc(Monto::from_pesos(50_000)),
+        )
+        .build()
+        .expect("build boleta must succeed");
+
+    assert_eq!(dte.tipo(), TipoDte::Boleta);
+    assert_eq!(dte.folio(), 200);
+    assert_eq!(dte.id(), "F200T39");
+    assert!(dte.is_boleta());
+    assert!(dte.is_envio_boleta());
+    assert!(!dte.is_envio_dte());
+    assert_eq!(dte.neto(), Some(Monto::from_pesos(50_000)));
+    assert_eq!(dte.iva(), Some(Monto::from_pesos(9_500)));
+    assert_eq!(dte.total(), Monto::from_pesos(59_500));
+    assert_eq!(dte.encabezado.receptor.rut_recep.to_string(), "66666666-6");
+
+    let xml_bytes = dte.to_xml().expect("to_xml must succeed");
+    assert_eq!(
+        xml_bytes, expected_canonical,
+        "Generated XML for Tipo 39 must match canonical fixture byte-for-byte"
+    );
+
+    let xml_str = String::from_utf8(xml_bytes).expect("valid UTF-8");
+    assert!(xml_str.contains("<TipoDTE>39</TipoDTE>"));
+    assert!(xml_str.contains("<Folio>200</Folio>"));
+    assert!(xml_str.contains("<RUTRecep>66666666-6</RUTRecep>"));
+    assert!(xml_str.contains("<RznSocRecep>Consumidor Final</RznSocRecep>"));
+    // Minimal receiver: optional address fields must not appear
+    assert!(!xml_str.contains("<DirRecep>"));
+    assert!(!xml_str.contains("<GiroRecep>"));
+}
+
+#[test]
+fn test_serialize_dte_41_against_fixture() {
+    let fixture_raw = include_bytes!("fixtures/dte-41.xml");
+    let expected_canonical = canonicalize_xml(fixture_raw).unwrap();
+
+    let dte = Dte::boleta_exenta()
+        .folio(300)
+        .fch_emis_str("2026-10-21")
+        .expect("valid date")
+        .emisor(sample_emisor().unwrap())
+        .item(
+            Detalle::new(
+                1,
+                "Entrada a espectaculo cultural exenta",
+                Monto::from_pesos(30_000),
+            )
+            .codigo("INT1", "PROD-41")
+            .qty(1)
+            .prc(Monto::from_pesos(30_000)),
+        )
+        .build()
+        .expect("build boleta exenta must succeed");
+
+    assert_eq!(dte.tipo(), TipoDte::BoletaExenta);
+    assert_eq!(dte.folio(), 300);
+    assert_eq!(dte.id(), "F300T41");
+    assert!(dte.is_boleta());
+    assert!(dte.is_envio_boleta());
+    assert!(!dte.is_envio_dte());
+    assert_eq!(dte.neto(), None);
+    assert_eq!(dte.iva(), None);
+    assert_eq!(dte.exento(), Some(Monto::from_pesos(30_000)));
+    assert_eq!(dte.total(), Monto::from_pesos(30_000));
+
+    let xml_bytes = dte.to_xml().expect("to_xml must succeed");
+    assert_eq!(
+        xml_bytes, expected_canonical,
+        "Generated XML for Tipo 41 must match canonical fixture byte-for-byte"
+    );
+
+    let xml_str = String::from_utf8(xml_bytes).expect("valid UTF-8");
+    assert!(xml_str.contains("<TipoDTE>41</TipoDTE>"));
+    assert!(xml_str.contains("<Folio>300</Folio>"));
+    assert!(xml_str.contains("<MntExe>30000</MntExe>"));
+    assert!(xml_str.contains("<MntTotal>30000</MntTotal>"));
+    assert!(!xml_str.contains("<MntNeto>"));
+    assert!(!xml_str.contains("<IVA>"));
+}
+
+#[test]
+fn test_serialize_dte_52_against_fixture() {
+    let fixture_raw = include_bytes!("fixtures/dte-52.xml");
+    let expected_canonical = canonicalize_xml(fixture_raw).unwrap();
+
+    let transporte = Transporte::new()
+        .patente("AB1234")
+        .rut_trans(Rut::parse("76.086.428-5").unwrap())
+        .chofer(Chofer::new(
+            Some(Rut::parse("12.345.678-5").unwrap()),
+            Some("Juan Perez".to_string()),
+        ))
+        .dir_dest("CALLE DESTINO 789")
+        .cmna_dest("PROVIDENCIA")
+        .ciudad_dest("SANTIAGO");
+
+    let dte = Dte::guia_despacho()
+        .folio(400)
+        .fch_emis_str("2026-10-21")
+        .expect("valid date")
+        .tipo_despacho(2)
+        .ind_traslado(1)
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .transporte(transporte)
+        .item(
+            Detalle::new(
+                1,
+                "Cajas de repuestos industriales",
+                Monto::from_pesos(80_000),
+            )
+            .codigo("INT1", "PROD-52")
+            .qty(2)
+            .prc(Monto::from_pesos(40_000)),
+        )
+        .build()
+        .expect("build guia despacho must succeed");
+
+    assert_eq!(dte.tipo(), TipoDte::GuiaDespacho);
+    assert_eq!(dte.folio(), 400);
+    assert_eq!(dte.id(), "F400T52");
+    assert!(!dte.is_boleta());
+    assert!(!dte.is_envio_boleta());
+    assert!(dte.is_envio_dte());
+    assert_eq!(dte.neto(), Some(Monto::from_pesos(80_000)));
+    assert_eq!(dte.iva(), Some(Monto::from_pesos(15_200)));
+    assert_eq!(dte.total(), Monto::from_pesos(95_200));
+
+    let xml_bytes = dte.to_xml().expect("to_xml must succeed");
+    assert_eq!(
+        xml_bytes, expected_canonical,
+        "Generated XML for Tipo 52 must match canonical fixture byte-for-byte"
+    );
+
+    let xml_str = String::from_utf8(xml_bytes).expect("valid UTF-8");
+    assert!(xml_str.contains("<TipoDTE>52</TipoDTE>"));
+    assert!(xml_str.contains("<TipoDespacho>2</TipoDespacho>"));
+    assert!(xml_str.contains("<IndTraslado>1</IndTraslado>"));
+    assert!(xml_str.contains("<Transporte>"));
+    assert!(xml_str.contains("<Patente>AB1234</Patente>"));
+    assert!(xml_str.contains("<RUTTrans>76086428-5</RUTTrans>"));
+    assert!(xml_str.contains(
+        "<Chofer><RUTChofer>12345678-5</RUTChofer><NombreChofer>Juan Perez</NombreChofer></Chofer>"
+    ));
+    assert!(xml_str.contains("<DirDest>CALLE DESTINO 789</DirDest>"));
+    assert!(xml_str.contains("<CmnaDest>PROVIDENCIA</CmnaDest>"));
+    assert!(xml_str.contains("<CiudadDest>SANTIAGO</CiudadDest>"));
+}
+
+#[test]
+fn test_serialize_dte_56_against_fixture() {
+    let fixture_raw = include_bytes!("fixtures/dte-56.xml");
+    let expected_canonical = canonicalize_xml(fixture_raw).unwrap();
+
+    let dte = Dte::nota_debito()
+        .folio(500)
+        .fch_emis_str("2026-10-21")
+        .expect("valid date")
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(
+            Detalle::new(
+                1,
+                "Intereses por mora en pago factura 60",
+                Monto::from_pesos(10_000),
+            )
+            .codigo("INT1", "PROD-56")
+            .qty(1)
+            .prc(Monto::from_pesos(10_000)),
+        )
+        .referencia_doc(
+            "33",
+            "60",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            3,
+            "Intereses por pago fuera de plazo",
+        )
+        .build()
+        .expect("build nota debito must succeed");
+
+    assert_eq!(dte.tipo(), TipoDte::NotaDebito);
+    assert_eq!(dte.folio(), 500);
+    assert_eq!(dte.id(), "F500T56");
+    assert!(!dte.is_boleta());
+    assert!(!dte.is_envio_boleta());
+    assert!(dte.is_envio_dte());
+    assert_eq!(dte.neto(), Some(Monto::from_pesos(10_000)));
+    assert_eq!(dte.iva(), Some(Monto::from_pesos(1_900)));
+    assert_eq!(dte.total(), Monto::from_pesos(11_900));
+    assert_eq!(dte.referencias().len(), 1);
+
+    let xml_bytes = dte.to_xml().expect("to_xml must succeed");
+    assert_eq!(
+        xml_bytes, expected_canonical,
+        "Generated XML for Tipo 56 must match canonical fixture byte-for-byte"
+    );
+
+    let xml_str = String::from_utf8(xml_bytes).expect("valid UTF-8");
+    assert!(xml_str.contains("<TipoDTE>56</TipoDTE>"));
+    assert!(xml_str.contains("<Referencia>"));
+    assert!(xml_str.contains("<NroLinRef>1</NroLinRef>"));
+    assert!(xml_str.contains("<TpoDocRef>33</TpoDocRef>"));
+    assert!(xml_str.contains("<FolioRef>60</FolioRef>"));
+    assert!(xml_str.contains("<FchRef>2026-10-21</FchRef>"));
+    assert!(xml_str.contains("<CodRef>3</CodRef>"));
+    assert!(xml_str.contains("<RazonRef>Intereses por pago fuera de plazo</RazonRef>"));
+}
+
+#[test]
+fn test_serialize_dte_61_against_fixture() {
+    let fixture_raw = include_bytes!("fixtures/dte-61.xml");
+    let expected_canonical = canonicalize_xml(fixture_raw).unwrap();
+
+    let dte = Dte::nota_credito()
+        .folio(600)
+        .fch_emis_str("2026-10-21")
+        .expect("valid date")
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(
+            Detalle::new(
+                1,
+                "Devolucion mercaderia factura 60",
+                Monto::from_pesos(100_000),
+            )
+            .codigo("INT1", "PROD-61")
+            .qty(1)
+            .prc(Monto::from_pesos(100_000)),
+        )
+        .referencia_doc(
+            "33",
+            "60",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            1,
+            "Anula factura 60 por devolucion total de mercaderia",
+        )
+        .build()
+        .expect("build nota credito must succeed");
+
+    assert_eq!(dte.tipo(), TipoDte::NotaCredito);
+    assert_eq!(dte.folio(), 600);
+    assert_eq!(dte.id(), "F600T61");
+    assert!(!dte.is_boleta());
+    assert!(!dte.is_envio_boleta());
+    assert!(dte.is_envio_dte());
+    assert_eq!(dte.neto(), Some(Monto::from_pesos(100_000)));
+    assert_eq!(dte.iva(), Some(Monto::from_pesos(19_000)));
+    assert_eq!(dte.total(), Monto::from_pesos(119_000));
+    assert_eq!(dte.referencias().len(), 1);
+
+    let xml_bytes = dte.to_xml().expect("to_xml must succeed");
+    assert_eq!(
+        xml_bytes, expected_canonical,
+        "Generated XML for Tipo 61 must match canonical fixture byte-for-byte"
+    );
+
+    let xml_str = String::from_utf8(xml_bytes).expect("valid UTF-8");
+    assert!(xml_str.contains("<TipoDTE>61</TipoDTE>"));
+    assert!(xml_str.contains("<Referencia>"));
+    assert!(xml_str.contains("<NroLinRef>1</NroLinRef>"));
+    assert!(xml_str.contains("<TpoDocRef>33</TpoDocRef>"));
+    assert!(xml_str.contains("<FolioRef>60</FolioRef>"));
+    assert!(xml_str.contains("<CodRef>1</CodRef>"));
+    assert!(
+        xml_str
+            .contains("<RazonRef>Anula factura 60 por devolucion total de mercaderia</RazonRef>")
+    );
+}
+
+#[test]
+fn test_nota_credito_requires_reference() {
+    // Missing reference: must fail with Error::DteValidation (DTE-02, RF-03)
+    let err = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+
+    // Empty TpoDocRef: must fail
+    let err = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .referencia_doc(
+            "",
+            "60",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            1,
+            "Razón",
+        )
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+
+    // Empty FolioRef: must fail
+    let err = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .referencia_doc(
+            "33",
+            "   ",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            1,
+            "Razón",
+        )
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+
+    // Empty RazonRef: must fail
+    let err = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .referencia_doc(
+            "33",
+            "60",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            1,
+            "",
+        )
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+
+    // Invalid CodRef: must fail
+    let err = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .referencia_doc(
+            "33",
+            "60",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            9,
+            "Razón",
+        )
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+}
+
+#[test]
+fn test_nota_debito_requires_reference() {
+    let err = Dte::nota_debito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+}
+
+#[test]
+fn test_guia_despacho_requires_ind_traslado() {
+    // Missing ind_traslado: must fail (RF-02)
+    let err = Dte::guia_despacho()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+
+    // Invalid ind_traslado (0): must fail
+    let err = Dte::guia_despacho()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .ind_traslado(0)
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+
+    // Invalid ind_traslado (10): must fail
+    let err = Dte::guia_despacho()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .ind_traslado(10)
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(1, "Item", Monto::from_pesos(1000)))
+        .build();
+
+    assert!(matches!(err, Err(Error::DteValidation(_))));
+}
+
+#[test]
+fn test_envelope_classification_all_types() {
+    let emisor = sample_emisor().unwrap();
+    let receptor = sample_receptor().unwrap();
+    let item = Detalle::new(1, "Test Item", Monto::from_pesos(1000));
+    let ref_date = sii::dte::parse_date("2026-10-21").unwrap();
+
+    // 33: Factura Afecta
+    let dte33 = Dte::factura_afecta()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .emisor(emisor.clone())
+        .receptor(receptor.clone())
+        .item(item.clone())
+        .build()
+        .unwrap();
+    assert!(!dte33.is_boleta());
+    assert!(!dte33.is_envio_boleta());
+    assert!(dte33.is_envio_dte());
+
+    // 34: Factura Exenta
+    let dte34 = Dte::factura_exenta()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .emisor(emisor.clone())
+        .receptor(receptor.clone())
+        .item(item.clone())
+        .build()
+        .unwrap();
+    assert!(!dte34.is_boleta());
+    assert!(!dte34.is_envio_boleta());
+    assert!(dte34.is_envio_dte());
+
+    // 39: Boleta Electrónica
+    let dte39 = Dte::boleta()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .emisor(emisor.clone())
+        .item(item.clone())
+        .build()
+        .unwrap();
+    assert!(dte39.is_boleta());
+    assert!(dte39.is_envio_boleta());
+    assert!(!dte39.is_envio_dte());
+
+    // 41: Boleta Exenta Electrónica
+    let dte41 = Dte::boleta_exenta()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .emisor(emisor.clone())
+        .item(item.clone())
+        .build()
+        .unwrap();
+    assert!(dte41.is_boleta());
+    assert!(dte41.is_envio_boleta());
+    assert!(!dte41.is_envio_dte());
+
+    // 52: Guía de Despacho
+    let dte52 = Dte::guia_despacho()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .ind_traslado(1)
+        .emisor(emisor.clone())
+        .receptor(receptor.clone())
+        .item(item.clone())
+        .build()
+        .unwrap();
+    assert!(!dte52.is_boleta());
+    assert!(!dte52.is_envio_boleta());
+    assert!(dte52.is_envio_dte());
+
+    // 56: Nota de Débito
+    let dte56 = Dte::nota_debito()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .emisor(emisor.clone())
+        .receptor(receptor.clone())
+        .item(item.clone())
+        .referencia_doc("33", "1", ref_date, 3, "Intereses")
+        .build()
+        .unwrap();
+    assert!(!dte56.is_boleta());
+    assert!(!dte56.is_envio_boleta());
+    assert!(dte56.is_envio_dte());
+
+    // 61: Nota de Crédito
+    let dte61 = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-10-21")
+        .unwrap()
+        .emisor(emisor.clone())
+        .receptor(receptor.clone())
+        .item(item)
+        .referencia_doc("33", "1", ref_date, 1, "Anulación")
+        .build()
+        .unwrap();
+    assert!(!dte61.is_boleta());
+    assert!(!dte61.is_envio_boleta());
+    assert!(dte61.is_envio_dte());
+}
+
+#[test]
+fn test_nota_credito_text_correction_zero_amount() {
+    let dte = Dte::nota_credito()
+        .folio(1)
+        .fch_emis_str("2026-11-21")
+        .unwrap()
+        .emisor(sample_emisor().unwrap())
+        .receptor(sample_receptor().unwrap())
+        .item(Detalle::new(
+            1,
+            "Corrige texto de razon social",
+            Monto::from_pesos(0),
+        ))
+        .referencia_doc(
+            "33",
+            "100",
+            sii::dte::parse_date("2026-10-21").unwrap(),
+            2, // CodRef 2: Corrige texto
+            "Corrige texto receptor",
+        )
+        .build()
+        .expect("text correction note allows 0 amount");
+
+    assert_eq!(dte.total(), Monto::ZERO);
+    assert_eq!(dte.neto(), None);
+    assert_eq!(dte.iva(), None);
+
+    let xml = String::from_utf8(dte.to_xml().unwrap()).unwrap();
+    assert!(xml.contains("<MntTotal>0</MntTotal>"));
+    assert!(xml.contains("<CodRef>2</CodRef>"));
 }
