@@ -1234,6 +1234,38 @@ impl DteTimbrado {
 }
 
 /// Builder for Factura Electrónica (afecta a IVA 19 %) - Tipo 33.
+///
+/// # Example
+///
+/// ```
+/// use sii::dte::{Detalle, Emisor, FacturaAfectaBuilder, Receptor};
+/// use sii::types::{Monto, Rut};
+///
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let emisor = Emisor {
+///     rut_emisor: Rut::new(76_086_428, '5')?,
+///     rzn_soc: "Emisor SpA".into(),
+///     giro_emis: "Servicios".into(),
+///     acteco: vec![620100],
+///     cdg_sii_sucur: None,
+///     dir_origen: "Calle 1".into(),
+///     cmna_origen: "Santiago".into(),
+///     ciudad_origen: None,
+/// };
+/// let receptor = Receptor::minimo(Rut::new(12_345_678, '5')?, "Cliente S.A.");
+///
+/// let dte = FacturaAfectaBuilder::new()
+///     .folio(1)
+///     .fch_emis_str("2026-11-22")?
+///     .emisor(emisor)
+///     .receptor(receptor)
+///     .item(Detalle::new(1, "Item", Monto::from_pesos(50_000)).qty(1))
+///     .build()?;
+///
+/// assert_eq!(dte.total(), Monto::from_pesos(59_500));
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Debug, Clone, Default)]
 pub struct FacturaAfectaBuilder {
     folio: Option<u64>,
@@ -2399,6 +2431,51 @@ impl NotaDebitoBuilder {
 }
 
 /// Builder for Nota de Crédito Electrónica - Tipo 61.
+///
+/// In accordance with Chilean tax law and rule DTE-02, a Credit Note **must** include
+/// at least one reference ([`Referencia`]) to a previous document.
+///
+/// # Example
+///
+/// ```
+/// use sii::dte::{Detalle, Emisor, NotaCreditoBuilder, Receptor, Referencia};
+/// use sii::types::{Monto, Rut};
+///
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let emisor = Emisor {
+///     rut_emisor: Rut::new(76_086_428, '5')?,
+///     rzn_soc: "Emisor SpA".into(),
+///     giro_emis: "Servicios".into(),
+///     acteco: vec![620100],
+///     cdg_sii_sucur: None,
+///     dir_origen: "Calle 1".into(),
+///     cmna_origen: "Santiago".into(),
+///     ciudad_origen: None,
+/// };
+/// let receptor = Receptor::minimo(Rut::new(12_345_678, '5')?, "Cliente S.A.");
+///
+/// let nc = NotaCreditoBuilder::new()
+///     .folio(10)
+///     .fch_emis_str("2026-11-22")?
+///     .emisor(emisor)
+///     .receptor(receptor)
+///     .referencia(Referencia {
+///         nro_lin_ref: 1,
+///         tpo_doc_ref: "33".into(),
+///         ind_global: None,
+///         folio_ref: "1".into(),
+///         rut_otr: None,
+///         fch_ref: sii::dte::parse_date("2026-11-20")?,
+///         cod_ref: Some(1), // 1 = Anula documento de referencia
+///         razon_ref: Some("Anula factura 1".into()),
+///     })
+///     .item(Detalle::new(1, "Anulación", Monto::from_pesos(50_000)))
+///     .build()?;
+///
+/// assert_eq!(nc.referencias().len(), 1);
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Debug, Clone, Default)]
 pub struct NotaCreditoBuilder {
     folio: Option<u64>,

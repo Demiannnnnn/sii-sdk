@@ -9,6 +9,16 @@ pub use crate::codes::{Ambiente, TipoDte};
 /// Computes the check digit (DV) for a Chilean RUT number using modulo 11.
 ///
 /// Returns `'0'`..=`'9'` or `'K'`.
+///
+/// # Example
+///
+/// ```
+/// use sii::types::compute_dv;
+///
+/// assert_eq!(compute_dv(76_086_428), '5');
+/// assert_eq!(compute_dv(12_345_678), '5');
+/// assert_eq!(compute_dv(6), 'K');
+/// ```
 #[must_use]
 pub fn compute_dv(mut number: u32) -> char {
     let mut sum: u32 = 0;
@@ -94,6 +104,18 @@ impl Rut {
     /// # Errors
     ///
     /// Returns [`Error::InvalidRut`] if the string is malformed or the check digit is invalid.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sii::types::Rut;
+    ///
+    /// let rut = Rut::parse("76.086.428-5")?;
+    /// assert_eq!(rut.number(), 76_086_428);
+    /// assert_eq!(rut.dv(), '5');
+    /// assert_eq!(rut.to_string(), "76086428-5");
+    /// # Ok::<(), sii::Error>(())
+    /// ```
     pub fn parse(s: &str) -> Result<Self, Error> {
         let trimmed = s.trim();
         if trimmed.bytes().filter(|&b| b == b'-').count() != 1 {
@@ -266,6 +288,15 @@ impl Monto {
     pub const ZERO: Self = Self(0);
 
     /// Creates a new `Monto` from an integer amount of Chilean Pesos.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sii::types::Monto;
+    ///
+    /// let monto = Monto::from_pesos(100_000);
+    /// assert_eq!(monto.as_pesos(), 100_000);
+    /// ```
     #[inline]
     #[must_use]
     pub const fn from_pesos(pesos: i64) -> Self {
@@ -421,6 +452,17 @@ impl Monto {
     /// # Errors
     ///
     /// Returns [`Error::InvalidMonto`] if the arithmetic overflows.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use sii::types::Monto;
+    ///
+    /// let neto = Monto::from_pesos(100_000);
+    /// let iva = neto.iva_19()?;
+    /// assert_eq!(iva, Monto::from_pesos(19_000));
+    /// # Ok::<(), sii::Error>(())
+    /// ```
     pub fn iva_19(self) -> Result<Self, Error> {
         self.checked_iva_19()
             .ok_or_else(|| Error::InvalidMonto("overflow calculating 19% IVA".to_string()))

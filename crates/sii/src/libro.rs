@@ -689,6 +689,30 @@ impl TotalesAccumulator {
 /// Wraps an `<EnvioLibro>` containing `<Caratula>`, optional `<ResumenPeriodo>`,
 /// `<Detalle>` records, and carries an enveloped `XMLDSig` signature over the
 /// `<EnvioLibro ID="...">` element (RF-01, RF-02, `docs/dte-spec.md` §8).
+///
+/// # Example
+///
+/// ```
+/// use sii::libro::{LibroCompraVenta, PeriodoTributario, TipoOperacion};
+/// use sii::types::Rut;
+///
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let emisor_rut = Rut::new(76_086_428, '5')?;
+/// let envia_rut = Rut::new(12_345_678, '5')?;
+/// let resol_date = sii::dte::parse_date("2026-01-15")?;
+///
+/// let libro = LibroCompraVenta::nuevo(
+///     emisor_rut,
+///     envia_rut,
+///     PeriodoTributario::new(2026, 11)?,
+///     resol_date,
+///     0,
+///     TipoOperacion::Venta,
+/// );
+/// assert_eq!(libro.caratula().rut_emisor_libro, emisor_rut);
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Debug, Clone)]
 pub struct LibroCompraVenta {
     caratula: CaratulaLibro,
