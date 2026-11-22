@@ -16,6 +16,7 @@ pub mod ted;
 pub mod transport;
 pub mod types;
 
+pub use auth::{RespuestaSemilla, RespuestaToken, Semilla, SolicitudToken, Token, firmar_semilla};
 pub use caf::Caf;
 pub use codes::{Ambiente, TipoDte};
 pub use dte::{
@@ -26,7 +27,7 @@ pub use dte::{
 pub use error::{Error, Result};
 pub use signature::{
     Certificate, DigestAlgorithm, SignatureAlgorithm, SignatureOptions, Signer, X509Certificate,
-    canonicalize, sign, sign_dte, verify,
+    canonicalize, sign, sign_dte, sign_enveloped, verify,
 };
 pub use ted::{Dd, Ted};
 pub use types::{Clock, ManualClock, Monto, Rut};
