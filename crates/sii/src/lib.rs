@@ -16,5 +16,9 @@ pub mod ted;
 pub mod transport;
 pub mod types;
 
+pub use codes::{Ambiente, TipoDte};
+pub use error::{Error, Result};
+pub use types::{Monto, Rut};
+
 /// Current crate version.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
