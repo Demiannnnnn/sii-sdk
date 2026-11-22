@@ -49,7 +49,7 @@ tasks/
 | 7 | [SIG-01](sig/task-01-xmldsig.md) | XMLDSig: `Signer`/`Certificate`, firmar/verificar, C14N | DTE-01 | P0 | ✅ |
 | 8 | [ENVIO-01](envio/task-01-envio-dte-boleta.md) | `EnvioDTE`/`EnvioBOLETA`, carátula, firma del sobre | SIG-01, TED-01 | P1 | ✅ |
 | 9 | [AUTH-01](auth/task-01-semilla-token.md) | Semilla/token del SII (modelo + firma de la semilla) | SIG-01 | P1 | ✅ |
-| 10 | [TRANSPORT-01](transport/task-01-transport-client-http.md) | `Transport`, `SiiClient`, `HttpTransport` (feature `http`), estado | ENVIO-01, AUTH-01 | P1 | ⬜ |
+| 10 | [TRANSPORT-01](transport/task-01-transport-client-http.md) | `Transport`, `SiiClient`, `HttpTransport` (feature `http`), estado | ENVIO-01, AUTH-01 | P1 | ✅ |
 | 11 | [SIM-01](sim/task-01-simulator.md) | `sii-sim`: simulador de los endpoints del SII | TRANSPORT-01 | P1 | ⬜ |
 | 12 | [LIBRO-01](libro/task-01-compra-venta.md) | Libro de compra/venta (IECV) | SIG-01 | P2 | ✅ |
 | 13 | [CLI-01](cli/task-01-cli.md) | `sii-cli` (bin `sii`): armar, timbrar, firmar, enviar, estado | SIM-01 | P2 | ⬜ |
