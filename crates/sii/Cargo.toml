@@ -17,8 +17,15 @@ authors.workspace = true
 default = []
 http = []
 pkcs12 = []
-serde = []
+serde = ["dep:serde"]
 tracing = []
+
+[dependencies]
+thiserror = { workspace = true }
+serde = { workspace = true, optional = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
 
 [package.metadata.docs.rs]
 all-features = true
