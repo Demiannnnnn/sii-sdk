@@ -485,6 +485,121 @@ impl TryFrom<usize> for Monto {
     }
 }
 
+/// Clock trait for providing date and time without system I/O (ADR-01, QA-03).
+///
+/// Implemented by types providing temporal context, enabling deterministic testing.
+pub trait Clock: Send + Sync {
+    /// Returns the current date and time with UTC offset.
+    fn now(&self) -> time::OffsetDateTime;
+}
+
+/// A manual, fixed clock useful for deterministic testing and reproducible stamps (QA-03).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ManualClock {
+    time: time::OffsetDateTime,
+}
+
+impl ManualClock {
+    /// Creates a new `ManualClock` initialized to the given date and time.
+    #[must_use]
+    pub const fn new(time: time::OffsetDateTime) -> Self {
+        Self { time }
+    }
+
+    /// Sets or advances the clock to a new date and time.
+    pub fn set_time(&mut self, time: time::OffsetDateTime) {
+        self.time = time;
+    }
+}
+
+impl Clock for ManualClock {
+    fn now(&self) -> time::OffsetDateTime {
+        self.time
+    }
+}
+
+impl Clock for time::OffsetDateTime {
+    fn now(&self) -> time::OffsetDateTime {
+        *self
+    }
+}
+
+impl Clock for time::PrimitiveDateTime {
+    fn now(&self) -> time::OffsetDateTime {
+        self.assume_utc()
+    }
+}
+
+impl<T: Clock + ?Sized> Clock for &T {
+    fn now(&self) -> time::OffsetDateTime {
+        (*self).now()
+    }
+}
+
+/// Formats a `time::OffsetDateTime` as `YYYY-MM-DDTHH:MM:SS`.
+#[must_use]
+pub fn format_timestamp(dt: &time::OffsetDateTime) -> String {
+    format!(
+        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}",
+        dt.year(),
+        dt.month() as u8,
+        dt.day(),
+        dt.hour(),
+        dt.minute(),
+        dt.second()
+    )
+}
+
+/// Parses a `YYYY-MM-DDTHH:MM:SS` string into a `time::OffsetDateTime` (UTC).
+///
+/// # Errors
+///
+/// Returns [`Error::InvalidDate`] if the timestamp string cannot be parsed.
+pub fn parse_timestamp(s: &str) -> Result<time::OffsetDateTime, Error> {
+    let trimmed = s.trim();
+    let parts: Vec<&str> = trimmed.split('T').collect();
+    if parts.len() != 2 {
+        return Err(Error::InvalidDate(format!(
+            "expected YYYY-MM-DDTHH:MM:SS format, got: {s}"
+        )));
+    }
+    let date_str = parts
+        .first()
+        .ok_or_else(|| Error::InvalidDate(s.to_string()))?;
+    let time_str = parts
+        .get(1)
+        .ok_or_else(|| Error::InvalidDate(s.to_string()))?;
+
+    let date = crate::dte::parse_date(date_str)?;
+
+    let time_parts: Vec<&str> = time_str.split(':').collect();
+    if time_parts.len() != 3 {
+        return Err(Error::InvalidDate(format!(
+            "expected HH:MM:SS time format in timestamp, got: {time_str}"
+        )));
+    }
+    let h: u8 = time_parts
+        .first()
+        .ok_or_else(|| Error::InvalidDate(s.to_string()))?
+        .parse()
+        .map_err(|e| Error::InvalidDate(format!("invalid hour in {time_str}: {e}")))?;
+    let m: u8 = time_parts
+        .get(1)
+        .ok_or_else(|| Error::InvalidDate(s.to_string()))?
+        .parse()
+        .map_err(|e| Error::InvalidDate(format!("invalid minute in {time_str}: {e}")))?;
+    let sec: u8 = time_parts
+        .get(2)
+        .ok_or_else(|| Error::InvalidDate(s.to_string()))?
+        .parse()
+        .map_err(|e| Error::InvalidDate(format!("invalid second in {time_str}: {e}")))?;
+
+    let time = time::Time::from_hms(h, m, sec)
+        .map_err(|e| Error::InvalidDate(format!("invalid time {time_str}: {e}")))?;
+
+    Ok(date.with_time(time).assume_utc())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

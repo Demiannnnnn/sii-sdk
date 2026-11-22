@@ -420,7 +420,7 @@ fn verify_keypair_match(priv_k: &RsaPrivateKey, pub_k: &RsaPublicKey) -> Result<
     Ok(())
 }
 
-fn find_tag_slice<'a>(xml: &'a [u8], tag_name: &[u8]) -> Result<&'a [u8]> {
+pub(crate) fn find_tag_slice<'a>(xml: &'a [u8], tag_name: &[u8]) -> Result<&'a [u8]> {
     let mut open_prefix = Vec::with_capacity(tag_name.len() + 1);
     open_prefix.push(b'<');
     open_prefix.extend_from_slice(tag_name);

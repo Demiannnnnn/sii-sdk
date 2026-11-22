@@ -19,12 +19,13 @@ pub mod types;
 pub use caf::Caf;
 pub use codes::{Ambiente, TipoDte};
 pub use dte::{
-    CdgItem, Detalle, Dte, Emisor, Encabezado, FacturaAfectaBuilder, FacturaBuilder,
+    CdgItem, Detalle, Dte, DteTimbrado, Emisor, Encabezado, FacturaAfectaBuilder, FacturaBuilder,
     FacturaExentaBuilder, IdDoc, Receptor, Totales,
 };
 pub use error::{Error, Result};
 pub use signature::Signer;
-pub use types::{Monto, Rut};
+pub use ted::{Dd, Ted};
+pub use types::{Clock, ManualClock, Monto, Rut};
 
 /// Current crate version.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

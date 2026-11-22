@@ -1,0 +1,5 @@
+<!-- Fixture de prueba para timbre electronico TED (TED-01, SEC-01) derivado de caf-33.xml y dte-33.xml -->
+<TED version="1.0"><DD><RE>76086428-5</RE><TD>33</TD><F>60</F><FE>2026-10-21</FE><RR>77777777-7</RR><RSR>CLIENTE DE PRUEBAS SA</RSR><MNT>119000</MNT><IT1>Servidor de aplicaciones</IT1><CAF version="1.0">
+<DA><RE>76086428-5</RE><RS>EMPRESA DE PRUEBA SPA</RS><TD>33</TD><RNG><D>1</D><H>100</H></RNG><FA>2026-01-01</FA><RSAPK><M>xwJ9JTiJtZEEarkqh36tCaXZXDm3/iS7R+he1jG5X2hJNbCVdKYjqJnCFwpxL6Zbo+Wo8AuTHFIn+A+3n1K0pBdGQbUTqxg3EDGfdHtpmvgWb/z3liQBR28e6/UNTW2iCTysb5WAhg7Xv4k1jQKuOV1pOFirp94QWiISwll1ZKc=</M><E>AQAB</E></RSAPK><IDK>100</IDK></DA>
+<FRMA algoritmo="SHA1withRSA">RtIzuTYsuW4fW0NwmH5Ea0YxzkuejnUmMHP82R/w4PvflXMvsjOYlQf06CxiEqLUWROdOTCtcoAz7hOKj7udGTG1kN4CKaHrAzasx16/09U9m2ivH50e+ylP0Be+OtlYRg3DDX+gnmCoXm7uZoqUa3HDthKaGsC5/sujuFxnQHU=</FRMA>
+</CAF><TSTED>2026-10-21T15:30:00</TSTED></DD><FRMT algoritmo="SHA1withRSA">devGXCiL8sKgoV0OL9ZDNgWdUmrZwjyllBY5jHW5X8VddOhazoVaj6hNKUiPz0kA0nkXyNAorKnYbn5bGOjKaUsJo1Bi7AHnQa814lRVJUpefGqrlwmlh0y2+OnqhukAjCnGh9k93iFOaVwptW/Z0Qz83uWNnPY9NJAcyrAvfKU=</FRMT></TED>
