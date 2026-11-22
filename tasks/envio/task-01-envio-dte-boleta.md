@@ -3,7 +3,7 @@
 | Atributo | Detalle |
 |:--|:--|
 | **ID** | `ENVIO-01` |
-| **Estado** | ⬜ pendiente |
+| **Estado** | ✅ terminada |
 | **Depende de** | SIG-01, TED-01 |
 | **Rama** | `dev/envio-01-sobre` |
 | **Prioridad** | P1 |
