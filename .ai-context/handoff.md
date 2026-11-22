@@ -2,15 +2,18 @@
 
 Léelo al retomar en otra sesión o equipo. Resumen vivo del estado y la forma de trabajo.
 
-## Estado (2026-11-21)
+## Estado (2026-11-22)
 
-- Repositorio **recién creado** por el orquestador. Hecho: andamiaje de diseño completo
-  (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.ai-context/` completo, `docs/dte-spec.md`, `tasks/` con el plan
-  maestro y los archivos de tarea, licencias MIT/Apache, `rustfmt.toml`, `clippy.toml`, `.gitignore`, CI,
-  `tools/orchestration/`). Rama de integración: `develop-AGENTS`.
-- **Pendiente:** todo el código del producto. Siguiente tarea: **INFRA-01** (crear el workspace Cargo y los
-  tres crates con lints y licencias). Luego CORE-01 → CAF-01 → DTE-01/02 → TED-01 → SIG-01 → ENVIO-01 →
-  AUTH-01 → TRANSPORT-01 → SIM-01 → LIBRO-01 → CLI-01 → CERT-LOADER-01 → DOCS-01. Ver `tasks/README.md`.
+- **11 tareas de código integradas** en `develop-AGENTS` (128 tests): INFRA-01, CORE-01, CAF-01, DTE-01, DTE-02,
+  TED-01, SIG-01, AUTH-01, ENVIO-01, CERT-LOADER-01, LIBRO-01, TRANSPORT-01. Ver `implementation-status.md`.
+- **Siguiente:** SIM-01 (contrato del simulador documentado en `implementation-status.md`) → CLI-01 → DOCS-01.
+  CERT-99 lo hace el dueño con certificado y CAF reales.
+- ENVIO-01 y CERT-LOADER-01 los implementó Claude por el respaldo de cuota (CLAUDE.md); el resto, agy.
+- Lecciones de merge: ramas paralelas chocan de forma aditiva en `lib.rs`, `error.rs`, `Cargo.toml` y
+  `Cargo.lock` — combinar sin duplicar variantes/exports y regenerar el lock con `cargo generate-lockfile`.
+  Si el choque es estructural (métodos en `impl` distintos), relanzar la tarea desde el `develop-AGENTS` actual.
+- El hook de gitleaks bloquea llaves en commits: los tests guardan material de prueba como base64 DER y
+  reconstruyen el PEM en runtime.
 
 ## Forma de trabajo
 
