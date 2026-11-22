@@ -1,0 +1,15 @@
+/target
+
+# Secretos — NUNCA versionar (SEC-01)
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+.env
+.env.*
+!.env.example
+# CAF reales (los de prueba van como fixtures evidentes en tests/fixtures/)
+caf.xml
+caf-*.xml
+!crates/*/tests/fixtures/caf-*.xml
