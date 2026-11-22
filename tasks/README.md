@@ -40,7 +40,7 @@ tasks/
 
 | # | ID | Tarea | Depende de | Prioridad | Estado |
 |:--|:--|:--|:--|:--|:--|
-| 1 | [INFRA-01](infra/task-01-workspace-and-ci.md) | Workspace Cargo, lints, licencias por crate, CI, skeleton de 3 crates | — | P0 | ⬜ |
+| 1 | [INFRA-01](infra/task-01-workspace-and-ci.md) | Workspace Cargo, lints, licencias por crate, CI, skeleton de 3 crates | — | P0 | ✅ |
 | 2 | [CORE-01](core/task-01-types-rut-monto-errors.md) | `Rut` (DV), `Monto`, `TipoDte`, `Ambiente`, `Error` | INFRA-01 | P0 | ⬜ |
 | 3 | [CAF-01](caf/task-01-parse-and-validate.md) | Parse del CAF: rango, llave RSA, validación FRMA | CORE-01 | P0 | ⬜ |
 | 4 | [DTE-01](dte/task-01-model-and-xml.md) | Modelo DTE + XML para 33 y 34 (factura afecta/exenta) | CORE-01 | P0 | ⬜ |
