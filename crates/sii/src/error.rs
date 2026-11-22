@@ -23,4 +23,16 @@ pub enum Error {
     /// Invalid environment specification.
     #[error("invalid environment: {0}")]
     InvalidAmbiente(String),
+
+    /// DTE validation error (business or schema rules violated).
+    #[error("DTE validation error: {0}")]
+    DteValidation(String),
+
+    /// XML generation or parsing error.
+    #[error("XML error: {0}")]
+    Xml(String),
+
+    /// Invalid date format or value.
+    #[error("invalid date: {0}")]
+    InvalidDate(String),
 }

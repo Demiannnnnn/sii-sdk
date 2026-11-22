@@ -17,6 +17,10 @@ pub mod transport;
 pub mod types;
 
 pub use codes::{Ambiente, TipoDte};
+pub use dte::{
+    CdgItem, Detalle, Dte, Emisor, Encabezado, FacturaAfectaBuilder, FacturaBuilder,
+    FacturaExentaBuilder, IdDoc, Receptor, Totales,
+};
 pub use error::{Error, Result};
 pub use types::{Monto, Rut};
 
