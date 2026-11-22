@@ -26,6 +26,10 @@ pub use dte::{
 };
 pub use envio::{EnvioBoleta, EnvioDte, RUT_RECEPTOR_SII};
 pub use error::{Error, Result};
+pub use libro::{
+    CaratulaLibro, DetalleLibro, LibroCompraVenta, PeriodoTributario, TipoEnvio, TipoLibro,
+    TipoOperacion, TotalesPeriodo,
+};
 pub use signature::{
     Certificate, DigestAlgorithm, SignatureAlgorithm, SignatureOptions, Signer, X509Certificate,
     canonicalize, sign, sign_dte, sign_enveloped, sign_targeting_before, verify,
