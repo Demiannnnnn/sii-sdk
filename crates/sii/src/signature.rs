@@ -626,6 +626,62 @@ pub fn sign(
     cert: &dyn Certificate,
     options: SignatureOptions,
 ) -> Result<Vec<u8>> {
+    let signature_xml = build_id_reference_signature(xml, target_id, signer, cert, options)?;
+    insert_signature_into_xml(xml, &signature_xml)
+}
+
+/// Signs the element identified by `target_id` and inserts the enveloped `<Signature>`
+/// immediately before the last occurrence of `close_tag` (for example `"</EnvioDTE>"`).
+///
+/// Use this instead of [`sign`] when the automatic insertion heuristic would pick the
+/// wrong closing tag — notably an `EnvioDTE`/`EnvioBOLETA` whose `SetDTE` wraps several
+/// `<DTE>...</DTE>` elements, where the envelope signature must be a sibling of `SetDTE`.
+/// The resulting `<Signature>` is byte-identical to the one [`sign`] would produce.
+///
+/// # Errors
+///
+/// Returns [`Error`] if the target is not found, signing fails, the XML is invalid, or
+/// `close_tag` does not occur in `xml`.
+pub fn sign_targeting_before(
+    xml: &[u8],
+    target_id: &str,
+    close_tag: &str,
+    signer: &dyn Signer,
+    cert: &dyn Certificate,
+    options: SignatureOptions,
+) -> Result<Vec<u8>> {
+    let signature_xml = build_id_reference_signature(xml, target_id, signer, cert, options)?;
+    let xml_str = std::str::from_utf8(xml).map_err(|e| Error::Xml(e.to_string()))?;
+    let pos = xml_str
+        .rfind(close_tag)
+        .ok_or_else(|| Error::Xml(format!("closing tag {close_tag} not found")))?;
+    let prefix = xml_str
+        .get(..pos)
+        .ok_or_else(|| Error::Xml("internal error extracting xml prefix".into()))?;
+    let suffix = xml_str
+        .get(pos..)
+        .ok_or_else(|| Error::Xml("internal error extracting xml suffix".into()))?;
+    let mut result = Vec::with_capacity(xml.len().saturating_add(signature_xml.len()));
+    result.extend_from_slice(prefix.as_bytes());
+    result.extend_from_slice(signature_xml.as_bytes());
+    result.extend_from_slice(suffix.as_bytes());
+    Ok(result)
+}
+
+/// Builds the enveloped `<Signature>` XML referencing the element `#target_id`.
+///
+/// Shared by [`sign`] and [`sign_targeting_before`] so both emit identical signatures.
+///
+/// # Errors
+///
+/// Returns [`Error`] if the target cannot be canonicalized or signing fails.
+fn build_id_reference_signature(
+    xml: &[u8],
+    target_id: &str,
+    signer: &dyn Signer,
+    cert: &dyn Certificate,
+    options: SignatureOptions,
+) -> Result<String> {
     let canonical_target = canonicalize_node(xml, Some(target_id), None)?;
     let digest = options.digest_algorithm.digest(&canonical_target);
     let digest_b64 = BASE64_STANDARD.encode(&digest);
@@ -654,11 +710,9 @@ pub fn sign(
         "<KeyInfo><KeyValue><RSAKeyValue><Modulus>{m_b64}</Modulus><Exponent>{e_b64}</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>{cert_b64}</X509Certificate></X509Data></KeyInfo>"
     );
 
-    let signature_xml = format!(
+    Ok(format!(
         "<Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\">{signed_info_xml}<SignatureValue>{sig_b64}</SignatureValue>{key_info_xml}</Signature>"
-    );
-
-    insert_signature_into_xml(xml, &signature_xml)
+    ))
 }
 
 /// Signs a DTE XML document using the default SII signature algorithm (RSA-SHA1).
@@ -852,6 +906,72 @@ pub fn verify(xml: &[u8]) -> Result<bool> {
         &sig_info.public_key,
         sig_info.signature_algorithm,
     ))
+}
+
+/// Verifies the enveloped signature whose `Reference` targets the element `reference_id`.
+///
+/// Unlike [`verify`], which validates the first `<Signature>` found, this selects the
+/// signature block whose `<Reference URI="#{reference_id}">` matches, so it works on a
+/// document carrying several signatures — for example an `EnvioDTE` whose inner `<DTE>`
+/// elements are each signed, plus the envelope signature over `SetDTE`.
+///
+/// Returns `Ok(false)` if the targeted signature is missing or verification fails.
+///
+/// # Errors
+///
+/// Returns [`Error`] if the XML is malformed or the signature block cannot be parsed.
+pub fn verify_by_reference(xml: &[u8], reference_id: &str) -> Result<bool> {
+    let Ok(xml_str) = std::str::from_utf8(xml) else {
+        return Ok(false);
+    };
+
+    let Some(block) = find_signature_block_for_reference(xml_str, reference_id) else {
+        return Ok(false);
+    };
+
+    let sig_info = parse_signature_components(&block)?;
+
+    let target_id = sig_info.reference_uri.strip_prefix('#');
+    let Ok(canonical_target) = canonicalize_node(xml, target_id, None) else {
+        return Ok(false);
+    };
+
+    let computed_digest = sig_info.digest_algorithm.digest(&canonical_target);
+    if computed_digest != sig_info.expected_digest {
+        return Ok(false);
+    }
+
+    let canonical_signed_info = canonicalize_node(
+        sig_info.signed_info_raw.as_bytes(),
+        None,
+        Some("http://www.w3.org/2000/09/xmldsig#"),
+    )?;
+
+    Ok(verify_signed_info_crypto(
+        &canonical_signed_info,
+        &sig_info.signature_bytes,
+        &sig_info.public_key,
+        sig_info.signature_algorithm,
+    ))
+}
+
+/// Returns the `<Signature>...</Signature>` block whose `SignedInfo` references `#reference_id`.
+fn find_signature_block_for_reference(xml: &str, reference_id: &str) -> Option<String> {
+    let want = format!("URI=\"#{reference_id}\"");
+    let mut search_from = 0usize;
+    while let Some(rel_start) = xml.get(search_from..)?.find("<Signature") {
+        let start = search_from.checked_add(rel_start)?;
+        let rel_end = xml.get(start..)?.find("</Signature>")?;
+        let end = start
+            .checked_add(rel_end)?
+            .checked_add("</Signature>".len())?;
+        let block = xml.get(start..end)?;
+        if block.contains(&want) {
+            return Some(block.to_string());
+        }
+        search_from = end;
+    }
+    None
 }
 
 struct ParsedSignature {

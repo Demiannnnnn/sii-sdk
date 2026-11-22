@@ -24,10 +24,12 @@ pub use dte::{
     Encabezado, FacturaAfectaBuilder, FacturaBuilder, FacturaExentaBuilder, GuiaDespachoBuilder,
     IdDoc, NotaCreditoBuilder, NotaDebitoBuilder, Receptor, Referencia, Totales, Transporte,
 };
+pub use envio::{EnvioBoleta, EnvioDte, RUT_RECEPTOR_SII};
 pub use error::{Error, Result};
 pub use signature::{
     Certificate, DigestAlgorithm, SignatureAlgorithm, SignatureOptions, Signer, X509Certificate,
-    canonicalize, sign, sign_dte, sign_enveloped, verify,
+    canonicalize, sign, sign_dte, sign_enveloped, sign_targeting_before, verify,
+    verify_by_reference,
 };
 pub use ted::{Dd, Ted};
 pub use types::{Clock, ManualClock, Monto, Rut};
