@@ -79,7 +79,7 @@ fn test_fixture_caf_33_folio_range_check() {
 #[test]
 fn test_fixture_caf_33_signature_verification() {
     let xml_path = find_fixture_path("caf-33.xml");
-    let pub_path = find_fixture_path("sii-test-pubkey.pem");
+    let pub_path = find_fixture_path("sii-test-pubkey.pub");
 
     let xml_bytes = std::fs::read(&xml_path).expect("read caf-33.xml");
     let pub_pem = std::fs::read_to_string(&pub_path).expect("read pubkey");
@@ -99,7 +99,7 @@ fn test_fixture_caf_33_signature_verification() {
 #[test]
 fn test_fixture_caf_33_tampered_fails() {
     let xml_path = find_fixture_path("caf-33.xml");
-    let pub_path = find_fixture_path("sii-test-pubkey.pem");
+    let pub_path = find_fixture_path("sii-test-pubkey.pub");
 
     let xml_bytes = std::fs::read(&xml_path).expect("read caf-33.xml");
     let pub_pem = std::fs::read_to_string(&pub_path).expect("read pubkey");
