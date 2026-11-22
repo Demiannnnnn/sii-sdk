@@ -43,7 +43,7 @@ tasks/
 | 1 | [INFRA-01](infra/task-01-workspace-and-ci.md) | Workspace Cargo, lints, licencias por crate, CI, skeleton de 3 crates | — | P0 | ✅ |
 | 2 | [CORE-01](core/task-01-types-rut-monto-errors.md) | `Rut` (DV), `Monto`, `TipoDte`, `Ambiente`, `Error` | INFRA-01 | P0 | ✅ |
 | 3 | [CAF-01](caf/task-01-parse-and-validate.md) | Parse del CAF: rango, llave RSA, validación FRMA | CORE-01 | P0 | ✅ |
-| 4 | [DTE-01](dte/task-01-model-and-xml.md) | Modelo DTE + XML para 33 y 34 (factura afecta/exenta) | CORE-01 | P0 | ⬜ |
+| 4 | [DTE-01](dte/task-01-model-and-xml.md) | Modelo DTE + XML para 33 y 34 (factura afecta/exenta) | CORE-01 | P0 | ✅ |
 | 5 | [DTE-02](dte/task-02-rules-notes-guides.md) | Boletas (39/41), guía (52), notas (56/61) con referencias | DTE-01 | P1 | ⬜ |
 | 6 | [TED-01](ted/task-01-timbre-and-pdf417.md) | Timbre: `DD`, `FRMT` RSA-SHA1 con el CAF, datos PDF417 | CAF-01, DTE-01 | P0 | ⬜ |
 | 7 | [SIG-01](sig/task-01-xmldsig.md) | XMLDSig: `Signer`/`Certificate`, firmar/verificar, C14N | DTE-01 | P0 | ⬜ |
