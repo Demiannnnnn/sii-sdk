@@ -3,7 +3,7 @@
 | Atributo | Detalle |
 |:--|:--|
 | **ID** | `CERT-LOADER-01` |
-| **Estado** | ⬜ pendiente |
+| **Estado** | ✅ terminada |
 | **Depende de** | SIG-01 |
 | **Rama** | `dev/cert-loader-01-pkcs12` |
 | **Prioridad** | P2 |
