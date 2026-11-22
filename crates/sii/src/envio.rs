@@ -34,6 +34,7 @@ pub struct EnvioDte {
     fch_resol: time::Date,
     nro_resol: u32,
     documentos: Vec<EnvelopeDoc>,
+    signed_xml: Option<Vec<u8>>,
 }
 
 /// Builder for an `EnvioBOLETA` envelope (boletas, types 39 and 41).
@@ -43,6 +44,7 @@ pub struct EnvioBoleta {
     fch_resol: time::Date,
     nro_resol: u32,
     documentos: Vec<EnvelopeDoc>,
+    signed_xml: Option<Vec<u8>>,
 }
 
 /// Strips a leading `<?xml ... ?>` declaration and surrounding whitespace from a DTE.
@@ -154,7 +156,38 @@ macro_rules! envelope_impl {
                     fch_resol,
                     nro_resol,
                     documentos: Vec::new(),
+                    signed_xml: None,
                 }
+            }
+
+            /// Returns the issuer RUT (`RutEmisor`).
+            #[must_use]
+            pub fn rut_emisor(&self) -> &Rut {
+                &self.rut_emisor
+            }
+
+            /// Returns the sender RUT (`RutEnvia`).
+            #[must_use]
+            pub fn rut_envia(&self) -> &Rut {
+                &self.rut_envia
+            }
+
+            /// Attaches pre-signed XML bytes to this envelope.
+            #[must_use]
+            pub fn with_signed_xml(mut self, xml: Vec<u8>) -> Self {
+                self.signed_xml = Some(xml);
+                self
+            }
+
+            /// Stores pre-signed XML bytes in this envelope.
+            pub fn set_signed_xml(&mut self, xml: Vec<u8>) {
+                self.signed_xml = Some(xml);
+            }
+
+            /// Returns a reference to the signed XML bytes if attached.
+            #[must_use]
+            pub fn signed_xml(&self) -> Option<&[u8]> {
+                self.signed_xml.as_deref()
             }
 
             /// Adds a signed DTE of the given `tipo` to the envelope.

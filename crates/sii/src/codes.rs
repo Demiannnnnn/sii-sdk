@@ -232,6 +232,51 @@ impl Ambiente {
             Self::Produccion => "palena",
         }
     }
+
+    /// Returns the base URL for the SII environment.
+    #[must_use]
+    pub const fn base_url(&self) -> &'static str {
+        match self {
+            Self::Certificacion => "https://maullin.sii.cl",
+            Self::Produccion => "https://palena.sii.cl",
+        }
+    }
+
+    /// Returns the Web Service URL for acquiring an authentication seed (`CrSeed.jws`).
+    #[must_use]
+    pub const fn seed_url(&self) -> &'static str {
+        match self {
+            Self::Certificacion => "https://maullin.sii.cl/DTEWS/CrSeed.jws",
+            Self::Produccion => "https://palena.sii.cl/DTEWS/CrSeed.jws",
+        }
+    }
+
+    /// Returns the Web Service URL for exchanging a signed seed for a token (`GetTokenFromSeed.jws`).
+    #[must_use]
+    pub const fn token_url(&self) -> &'static str {
+        match self {
+            Self::Certificacion => "https://maullin.sii.cl/DTEWS/GetTokenFromSeed.jws",
+            Self::Produccion => "https://palena.sii.cl/DTEWS/GetTokenFromSeed.jws",
+        }
+    }
+
+    /// Returns the HTTP endpoint URL for uploading DTE envelopes (`DTEUpload`).
+    #[must_use]
+    pub const fn upload_url(&self) -> &'static str {
+        match self {
+            Self::Certificacion => "https://maullin.sii.cl/cgi_dte/UPL/DTEUpload",
+            Self::Produccion => "https://palena.sii.cl/cgi_dte/UPL/DTEUpload",
+        }
+    }
+
+    /// Returns the Web Service URL for querying upload status by Track ID (`QueryEstUp.jws`).
+    #[must_use]
+    pub const fn query_status_url(&self) -> &'static str {
+        match self {
+            Self::Certificacion => "https://maullin.sii.cl/DTEWS/QueryEstUp.jws",
+            Self::Produccion => "https://palena.sii.cl/DTEWS/QueryEstUp.jws",
+        }
+    }
 }
 
 impl fmt::Display for Ambiente {

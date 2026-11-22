@@ -66,4 +66,8 @@ pub enum Error {
     /// Authentication error with SII (seed acquisition or token exchange).
     #[error("authentication error: {0}")]
     Auth(String),
+
+    /// Transport or communication error with external services or network.
+    #[error("transport error: {0}")]
+    Transport(String),
 }

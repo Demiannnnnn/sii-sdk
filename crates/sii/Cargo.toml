@@ -15,7 +15,7 @@ authors.workspace = true
 
 [features]
 default = []
-http = []
+http = ["dep:ureq"]
 pkcs12 = ["dep:p12"]
 serde = ["dep:serde"]
 tracing = []
@@ -32,6 +32,7 @@ der = { workspace = true }
 base64 = { workspace = true }
 p12 = { workspace = true, optional = true }
 time = { workspace = true }
+ureq = { workspace = true, optional = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
