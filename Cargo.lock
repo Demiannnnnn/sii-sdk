@@ -1036,7 +1036,14 @@ dependencies = [
 name = "sii-cli"
 version = "0.1.0"
 dependencies = [
+ "base64",
+ "clap",
+ "quick-xml",
+ "serde",
+ "serde_json",
  "sii",
+ "sii-sim",
+ "time",
 ]
 
 [[package]]

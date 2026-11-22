@@ -17,7 +17,16 @@ name = "sii"
 path = "src/main.rs"
 
 [dependencies]
-sii = { workspace = true, default-features = false }
+sii = { workspace = true, default-features = false, features = ["http", "pkcs12", "serde"] }
+sii-sim = { workspace = true, features = ["http"] }
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true }
+quick-xml = { workspace = true }
+
+[dev-dependencies]
+base64 = { workspace = true }
 
 [lints]
 workspace = true
