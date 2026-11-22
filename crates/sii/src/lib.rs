@@ -18,6 +18,7 @@ pub mod types;
 
 pub use auth::{RespuestaSemilla, RespuestaToken, Semilla, SolicitudToken, Token, firmar_semilla};
 pub use caf::Caf;
+pub use client::{DetalleEnvio, EstadoEnvio, SiiClient, TrackId};
 pub use codes::{Ambiente, TipoDte};
 pub use dte::{
     BoletaBuilder, BoletaExentaBuilder, CdgItem, Chofer, Detalle, Dte, DteTimbrado, Emisor,
@@ -32,6 +33,9 @@ pub use signature::{
     verify_by_reference,
 };
 pub use ted::{Dd, Ted};
+#[cfg(feature = "http")]
+pub use transport::HttpTransport;
+pub use transport::{MemoryTransport, Method, Request, Response, Transport};
 pub use types::{Clock, ManualClock, Monto, Rut};
 
 /// Current crate version.
