@@ -8,6 +8,7 @@ fn smoke_test_sim_version() {
 #[test]
 fn smoke_test_sim_bin_runs() {
     let status = std::process::Command::new(env!("CARGO_BIN_EXE_sii-sim"))
+        .arg("--help")
         .status()
         .expect("failed to execute sii-sim binary");
     assert!(status.success());
