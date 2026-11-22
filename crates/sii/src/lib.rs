@@ -23,7 +23,10 @@ pub use dte::{
     FacturaExentaBuilder, IdDoc, Receptor, Totales,
 };
 pub use error::{Error, Result};
-pub use signature::Signer;
+pub use signature::{
+    Certificate, DigestAlgorithm, SignatureAlgorithm, SignatureOptions, Signer, X509Certificate,
+    canonicalize, sign, sign_dte, verify,
+};
 pub use ted::{Dd, Ted};
 pub use types::{Clock, ManualClock, Monto, Rut};
 
