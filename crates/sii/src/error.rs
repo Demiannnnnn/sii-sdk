@@ -58,4 +58,8 @@ pub enum Error {
     /// Cryptographic operation error (RSA, hashing, key parsing).
     #[error("cryptographic error: {0}")]
     Crypto(String),
+
+    /// Digital signature error (`XMLDSig` signing or verification).
+    #[error("signature error: {0}")]
+    Signature(String),
 }
