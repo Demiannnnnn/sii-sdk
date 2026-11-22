@@ -65,3 +65,13 @@ tasks/
 4. Implementa SOLO esa tarea. Corre los comandos de AGENTS.md §8.
 5. Actualiza la línea **Estado** de tu archivo y la sección `## Reporte`. Commitea en tu rama `dev/*`.
 6. El orquestador revisa, integra en `develop-AGENTS` y marca la fila como ✅.
+
+
+## Documentación para humanos (estándar del ecosistema, 2026-11-22)
+
+| ID | Tarea | Depende de | Estado |
+|:--|:--|:--|:--|
+| [HDOC-01](hdoc/task-01-estructura-diagramas-readme.md) | Estructura de docs para humanos, diagramas y README robusto | — | ⬜ |
+| [HDOC-02](hdoc/task-02-informe-tecnico.md) | Informe técnico e informe de diagramas | HDOC-01 | ⬜ |
+| [HDOC-03](hdoc/task-03-legal-seguridad.md) | Informe legal e informe de seguridad | HDOC-01 | ⬜ |
+| [HDOC-04](hdoc/task-04-despliegue-pruebas-usuario.md) | Despliegue/integración, pruebas | HDOC-01 | ⬜ |
