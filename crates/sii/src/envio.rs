@@ -28,6 +28,23 @@ struct EnvelopeDoc {
 }
 
 /// Builder for an `EnvioDTE` envelope (every DTE type except boletas 39/41).
+///
+/// # Example
+///
+/// ```
+/// use sii::envio::EnvioDte;
+/// use sii::types::Rut;
+///
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// let emisor_rut = Rut::new(76_086_428, '5')?;
+/// let envia_rut = Rut::new(12_345_678, '5')?;
+/// let resol_date = sii::dte::parse_date("2026-01-15")?;
+///
+/// let envio = EnvioDte::nuevo(emisor_rut, envia_rut, resol_date, 0);
+/// assert!(envio.is_empty());
+/// # Ok(())
+/// # }
+/// ```
 pub struct EnvioDte {
     rut_emisor: Rut,
     rut_envia: Rut,

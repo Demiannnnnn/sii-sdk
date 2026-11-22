@@ -7,6 +7,25 @@
 //! - [`Scenario`]: injectable failure and success scenarios (`Aceptado`, `Rechazado`, `EnProceso`, etc.).
 //! - [`HttpServer`]: local TCP HTTP server binding exclusively to loopback `127.0.0.1` (QA-01).
 //! - [`SimTransport`]: transport bridge connecting [`sii::SiiClient`] to the simulator.
+//!
+//! # Example
+//!
+//! ```
+//! use std::sync::Arc;
+//! use sii::SiiClient;
+//! use sii::codes::Ambiente;
+//! use sii_sim::{Scenario, SiiSimulator, SimTransport};
+//!
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! let simulator = Arc::new(SiiSimulator::new().with_scenario(Scenario::Aceptado));
+//! let transport = SimTransport::direct(simulator);
+//! let client = SiiClient::new(Ambiente::Certificacion, transport);
+//!
+//! let seed = client.obtener_semilla()?;
+//! assert!(!seed.as_str().is_empty());
+//! # Ok(())
+//! # }
+//! ```
 
 #![forbid(unsafe_code)]
 #![deny(missing_docs)]

@@ -878,6 +878,16 @@ fn insert_signature_into_xml(xml: &[u8], signature_xml: &str) -> Result<Vec<u8>>
 /// # Errors
 ///
 /// Returns [`Error`] if XML is malformed or lacks necessary cryptographic elements.
+///
+/// # Example
+///
+/// ```
+/// use sii::signature::verify;
+///
+/// // Unsigned XML will fail signature element parsing
+/// let unsigned = b"<DTE><Documento ID=\"F1T33\"></Documento></DTE>";
+/// assert!(verify(unsigned).is_err());
+/// ```
 pub fn verify(xml: &[u8]) -> Result<bool> {
     let Ok(xml_str) = std::str::from_utf8(xml) else {
         return Ok(false);
