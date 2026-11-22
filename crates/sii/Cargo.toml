@@ -16,7 +16,7 @@ authors.workspace = true
 [features]
 default = []
 http = []
-pkcs12 = []
+pkcs12 = ["dep:p12"]
 serde = ["dep:serde"]
 tracing = []
 
@@ -30,6 +30,7 @@ sha2 = { workspace = true, features = ["oid"] }
 x509-cert = { workspace = true }
 der = { workspace = true }
 base64 = { workspace = true }
+p12 = { workspace = true, optional = true }
 time = { workspace = true }
 
 [dev-dependencies]

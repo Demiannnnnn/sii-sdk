@@ -5,6 +5,8 @@
 
 pub mod auth;
 pub mod caf;
+#[cfg(feature = "pkcs12")]
+pub mod cert_loader;
 pub mod client;
 pub mod codes;
 pub mod dte;
