@@ -829,6 +829,7 @@ fn insert_signature_into_xml(xml: &[u8], signature_xml: &str) -> Result<Vec<u8>>
         "</DTE>",
         "</EnvioDTE>",
         "</EnvioBOLETA>",
+        "</LibroCompraVenta>",
         "</Documento>",
         "</getToken>",
     ];
