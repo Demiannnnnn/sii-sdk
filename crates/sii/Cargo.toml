@@ -1,0 +1,27 @@
+[package]
+name = "sii"
+description = "Unofficial Rust SDK for Chilean SII DTE (Electronic Tax Documents)"
+readme = "README.md"
+documentation = "https://docs.rs/sii"
+keywords = ["sii", "dte", "chile", "factura", "taxes"]
+categories = ["api-bindings", "finance", "cryptography"]
+include = ["src/**", "Cargo.toml", "README.md", "LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[features]
+default = []
+http = []
+pkcs12 = []
+serde = []
+tracing = []
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lints]
+workspace = true

@@ -1,0 +1,23 @@
+[package]
+name = "sii-cli"
+description = "Unofficial CLI (sii) for Chilean SII DTE operations"
+readme = "README.md"
+keywords = ["sii", "dte", "cli", "chile", "taxes"]
+categories = ["command-line-utilities"]
+include = ["src/**", "Cargo.toml", "README.md", "LICENSE-MIT", "LICENSE-APACHE", "NOTICE"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "sii"
+path = "src/main.rs"
+
+[dependencies]
+sii = { workspace = true, default-features = false }
+
+[lints]
+workspace = true
