@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Fixture: Chilean SII successful token response (GetTokenFromSeed.jws / getToken) -->
+<SII:RESPUESTA xmlns:SII="http://www.sii.cl/XMLSchema">
+    <SII:RESP_HDR>
+        <ESTADO>00</ESTADO>
+        <GLOSA>Token Creado</GLOSA>
+    </SII:RESP_HDR>
+    <SII:RESP_BODY>
+        <TOKEN>AG12345678ABCD90</TOKEN>
+    </SII:RESP_BODY>
+</SII:RESPUESTA>

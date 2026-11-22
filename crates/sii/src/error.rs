@@ -62,4 +62,8 @@ pub enum Error {
     /// Digital signature error (`XMLDSig` signing or verification).
     #[error("signature error: {0}")]
     Signature(String),
+
+    /// Authentication error with SII (seed acquisition or token exchange).
+    #[error("authentication error: {0}")]
+    Auth(String),
 }

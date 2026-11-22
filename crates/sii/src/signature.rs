@@ -687,6 +687,54 @@ pub fn sign_dte_with_options(
     sign(xml, &doc_id, signer, cert, options)
 }
 
+/// Signs an entire XML document using an enveloped `XMLDSig` signature with `URI=""`.
+///
+/// Complies with Chilean SII authentication standard for `getToken` requests.
+///
+/// # Errors
+///
+/// Returns [`Error`] if signing or key extraction fails.
+pub fn sign_enveloped(
+    xml: &[u8],
+    signer: &dyn Signer,
+    cert: &dyn Certificate,
+    options: SignatureOptions,
+) -> Result<Vec<u8>> {
+    let canonical_target = canonicalize_node(xml, None, None)?;
+    let digest = options.digest_algorithm.digest(&canonical_target);
+    let digest_b64 = BASE64_STANDARD.encode(&digest);
+
+    let signed_info_xml = format!(
+        "<SignedInfo><CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/><SignatureMethod Algorithm=\"{}\"/><Reference URI=\"\"><Transforms><Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/></Transforms><DigestMethod Algorithm=\"{}\"/><DigestValue>{digest_b64}</DigestValue></Reference></SignedInfo>",
+        options.signature_algorithm.uri(),
+        options.digest_algorithm.uri()
+    );
+
+    let canonical_signed_info = canonicalize_node(
+        signed_info_xml.as_bytes(),
+        None,
+        Some("http://www.w3.org/2000/09/xmldsig#"),
+    )?;
+
+    let sig_bytes = signer.sign(&canonical_signed_info)?;
+    let sig_b64 = BASE64_STANDARD.encode(&sig_bytes);
+
+    let pubkey = cert.public_key()?;
+    let m_b64 = BASE64_STANDARD.encode(pubkey.n().to_bytes_be());
+    let e_b64 = BASE64_STANDARD.encode(pubkey.e().to_bytes_be());
+    let cert_b64 = BASE64_STANDARD.encode(cert.raw_der());
+
+    let key_info_xml = format!(
+        "<KeyInfo><KeyValue><RSAKeyValue><Modulus>{m_b64}</Modulus><Exponent>{e_b64}</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>{cert_b64}</X509Certificate></X509Data></KeyInfo>"
+    );
+
+    let signature_xml = format!(
+        "<Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\">{signed_info_xml}<SignatureValue>{sig_b64}</SignatureValue>{key_info_xml}</Signature>"
+    );
+
+    insert_signature_into_xml(xml, &signature_xml)
+}
+
 fn extract_documento_id(xml: &[u8]) -> Result<String> {
     let mut reader = Reader::from_reader(xml);
     reader.config_mut().trim_text(false);
@@ -722,8 +770,14 @@ fn extract_documento_id(xml: &[u8]) -> Result<String> {
 fn insert_signature_into_xml(xml: &[u8], signature_xml: &str) -> Result<Vec<u8>> {
     let xml_str = std::str::from_utf8(xml).map_err(|e| Error::Xml(e.to_string()))?;
 
-    // Preferred insertion before root closing tag (e.g. </DTE>, </EnvioDTE>, </Documento>)
-    let closing_candidates = ["</DTE>", "</EnvioDTE>", "</EnvioBOLETA>", "</Documento>"];
+    // Preferred insertion before root closing tag (e.g. </DTE>, </EnvioDTE>, </Documento>, </getToken>)
+    let closing_candidates = [
+        "</DTE>",
+        "</EnvioDTE>",
+        "</EnvioBOLETA>",
+        "</Documento>",
+        "</getToken>",
+    ];
 
     for candidate in &closing_candidates {
         if let Some(pos) = xml_str.rfind(candidate) {
