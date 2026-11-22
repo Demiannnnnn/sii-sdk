@@ -206,7 +206,10 @@ fn test_client_full_flow_success() -> TestResult {
     // Request 3: Multipart upload POST
     assert_eq!(requests[2].method, Method::Post);
     assert_eq!(requests[2].url, ambiente.upload_url());
-    assert_eq!(requests[2].header("Cookie"), Some("TOKEN=TOKEN_TEST_MOCK_VAL"));
+    assert_eq!(
+        requests[2].header("Cookie"),
+        Some("TOKEN=TOKEN_TEST_MOCK_VAL")
+    );
     assert!(
         requests[2]
             .header("Content-Type")
