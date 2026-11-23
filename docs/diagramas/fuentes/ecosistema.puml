@@ -1,0 +1,41 @@
+@startuml ecosistema
+!include ../../plantilla/estilo.puml
+title Integración de sii-sdk en el ecosistema raysac
+
+package "Back-Office PyMEs Chile (ecosistema raysac)" {
+  rectangle "raysac-enterprise-web\n[portal web & hub central]\nPanel consolidado de administración y operaciones" as hub
+
+  rectangle "rework-sistema-facturacion\n[sistema de facturación electrónica]\nGestión de ventas, clientes, compras y emisión DTE" as facturacion
+
+  rectangle "sistema-remuneraciones\n[cálculo de sueldos y RRHH]\nLiquidaciones, contratos y libros de remuneraciones" as remuneraciones
+
+  rectangle "blindmetrics\n[control de asistencia y telemetría]\nMarcación laboral (Res. Ex. DT N°38) e IoT" as blindmetrics
+
+  package "Bibliotecas de integración (SDKs)" {
+    rectangle "sii-sdk\n[Rust DTE & SII SDK]\nLibrería sans-IO, CLI y simulador DTE" as sii_sdk #LightYellow
+
+    rectangle "transbank-SDK\n[Rust POS & Webpay SDK]\nLibrería de cobro integrado POS y pasarelas" as transbank_sdk
+
+    rectangle "previred-cotizaciones\n[integración previsional]\nGeneración de archivos de cotizaciones" as previred <<planificado>>
+  }
+}
+
+cloud "Servicios Externos del Estado y Pasarelas" {
+  rectangle "SII (Servicio de Impuestos Internos)\nWeb Services DTE / Boleta" as ext_sii
+  rectangle "Transbank / TBK POS\nRed de adquirencia y pagos" as ext_tbk
+  rectangle "Dirección del Trabajo (DT)\nPortal Mi DT / Inspección" as ext_dt
+}
+
+hub --> facturacion : Enlaza y supervisa
+hub --> remuneraciones : Enlaza y supervisa
+hub --> blindmetrics : Visualiza métricas de asistencia
+
+facturacion --> sii_sdk : Consume para emisión, timbrado, firma y envío DTE
+facturacion --> transbank_sdk : Consume para cobro presencial POS y vouchers
+
+remuneraciones ..> previred : Generará nóminas previsionales (planificado)
+blindmetrics --> ext_dt : Reporta asistencia y descansos laborales
+
+sii_sdk --> ext_sii : Intercambio de XMLDSig, sobres DTE y consultas
+transbank_sdk --> ext_tbk : Comunicación serie / TCP con terminales POS
+@enduml

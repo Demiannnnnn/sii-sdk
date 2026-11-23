@@ -1,0 +1,34 @@
+@startuml estados-envio
+!include ../../plantilla/estilo.puml
+title Diagrama de estados — Ciclo de vida y procesamiento de un Envío al SII
+
+[*] --> Empaquetado : Construcción de EnvioDte con DTEs firmados
+Empaquetado --> Firmado : Firma XMLDSig sobre nodo <SetDoc>
+Firmado --> Transmitido : HTTP POST multipart a /cgi_dte/UPL/DTEUpload con Token
+
+state Transmitido {
+  [*] --> RecepcionSII
+  RecepcionSII --> RechazoInicial : STATUS != 0\n(Error en cabecera / token)
+  RecepcionSII --> Encolado : STATUS == 0\n(SII asigna Track ID)
+}
+
+RechazoInicial --> Rechazado : Retorna detalle de error inmediato
+
+Encolado --> EnProceso : Estado inicial consulta SOAP (EPR)
+
+state EnProceso {
+  [*] --> ValidacionEsquema
+  ValidacionEsquema --> RevisionCaratula : Esquema XML válido
+  RevisionCaratula --> RevisionFirmas : RUT emisor y folios coinciden
+  RevisionFirmas --> ProcesamientoDTEs : Firmas XMLDSig válidas
+}
+
+EnProceso --> EnProceso : Consulta periódica con espera exponencial
+EnProceso --> Aceptado : Verificación exitosa de todos los DTEs (EPR aceptados > 0 / SOK)
+EnProceso --> AceptadoConReparos : Aceptado con observaciones menores (reparos > 0)
+EnProceso --> Rechazado : Error de firma, folio no autorizado o sintaxis (REC / RFR)
+
+Aceptado --> [*]
+AceptadoConReparos --> [*]
+Rechazado --> [*]
+@enduml

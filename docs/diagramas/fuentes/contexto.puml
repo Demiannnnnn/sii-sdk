@@ -1,0 +1,20 @@
+@startuml contexto
+!include ../../plantilla/estilo.puml
+title Contexto del sistema — sii-sdk (C4 nivel 1)
+
+actor "Desarrollador / Integrador" as dev
+actor "Emisor / Contribuyente" as emisor
+rectangle "Software Emisor\n[sistema / host]\n(rework-sistema-facturacion, ERP, POS)" as host
+rectangle "sii-sdk\n[biblioteca Rust + CLI + Simulador]\nConstrucción, timbraje, firma XMLDSig y envío de DTEs" as sdk
+rectangle "SII (Servicio de Impuestos Internos)\n[sistema externo]\nServicios web de certificación y producción" as sii
+rectangle "Autoridad Certificadora (CA)\n[sistema externo]\nEmisión de certificado digital X.509" as ca
+rectangle "Portal Mi SII\n[sistema externo]\nDescarga de archivos CAF de folios" as portal_sii
+
+dev --> sdk : Integra en aplicación Rust o usa binario CLI
+emisor --> host : Emite facturas, boletas, notas y libros
+host --> sdk : Invoca API pública sans-IO (Dte, Caf, Envio, SiiClient)
+ca ..> emisor : Otorga certificado de firma (PKCS#12)
+portal_sii ..> emisor : Entrega autorización de folios (CAF XML)
+emisor --> host : Suministra certificado digital y CAF
+sdk --> sii : Obtiene semilla/token, sube sobres y consulta estado
+@enduml

@@ -1,0 +1,57 @@
+@startuml secuencia-emision-envio
+!include ../../plantilla/estilo.puml
+title Secuencia — Emisión, Timbraje, Firma y Envío de DTE
+
+actor "Aplicación Emisora" as app
+participant "FacturaAfectaBuilder" as builder
+participant "Dte" as dte
+participant "Caf" as caf
+participant "Signer\n(Certificado Digital)" as signer
+participant "EnvioDte" as envio
+participant "SiiClient<T>" as client
+participant "SII (DTEUpload)" as sii
+
+app -> builder : new().folio(101).emisor(e).receptor(r).item(i).build()
+activate builder
+builder --> app : dte (Dte sin timbrar)
+deactivate builder
+
+app -> dte : timbrar(&caf, folio = 101, &clock)
+activate dte
+dte -> caf : sign_ted(dd_bytes)
+activate caf
+caf -> caf : Cifra Digest SHA-1 de <DD> con llave RSA privada del CAF
+caf --> dte : firma FRMT (base64)
+deactivate caf
+dte --> app : dte_timbrado (DteTimbrado con nodo <TED>)
+deactivate dte
+
+app -> dte_timbrado : firmar(signer)
+activate dte_timbrado
+dte_timbrado -> signer : sign(documento_c14n, Sha1)
+activate signer
+signer --> dte_timbrado : firma XMLDSig (<Signature>)
+deactivate signer
+dte_timbrado --> app : dte_firmado (DteFirmado)
+deactivate dte_timbrado
+
+app -> envio : EnvioDte::nuevo(emisor, receptor, Ambiente::Certificacion)
+activate envio
+app -> envio : agregar_dte(dte_firmado)
+app -> envio : firmar(signer)
+envio -> signer : sign(set_doc_c14n, Sha1)
+activate signer
+signer --> envio : firma XMLDSig del sobre
+deactivate signer
+envio --> app : xml_envio_firmado (bytes)
+deactivate envio
+
+app -> client : enviar(xml_envio_firmado, &token)
+activate client
+client -> sii : POST /cgi_dte/UPL/DTEUpload\n(multipart/form-data, Cookie: TOKEN=...)
+activate sii
+sii --> client : 200 OK (XML <RECEPCIONDTE><STATUS>0</STATUS><TRACKID>987654321</TRACKID></RECEPCIONDTE>)
+deactivate sii
+client --> app : Ok(TrackId("987654321"))
+deactivate client
+@enduml

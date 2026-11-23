@@ -1,0 +1,48 @@
+@startuml secuencia-autenticacion
+!include ../../plantilla/estilo.puml
+title Secuencia — Autenticación ante el SII (Semilla y Token)
+
+actor "Aplicación Emisora" as app
+participant "SiiClient<T>" as client
+participant "Transport\n(HttpTransport)" as trans
+participant "Signer\n(Certificado Digital X.509)" as signer
+participant "SII Web Services\n(palena / maullin)" as sii
+
+app -> client : obtener_token(signer)
+activate client
+
+client -> trans : send(GET /DTEWS/CrSeed.jws)
+activate trans
+trans -> sii : HTTP GET /DTEWS/CrSeed.jws
+activate sii
+sii --> trans : 200 OK (XML con <ESTADO>00</ESTADO> y <SEMILLA>123456789012</SEMILLA>)
+deactivate sii
+trans --> client : Response (XML Semilla)
+deactivate trans
+
+client -> client : auth::extraer_semilla(xml) -> Semilla("123456789012")
+
+client -> client : auth::construir_xml_getToken(semilla)
+note right of client : Genera documento XML\n<getToken><item><Semilla>...\npara firma enveloped
+
+client -> signer : sign(xml_getToken, DigestAlgorithm::Sha1)
+activate signer
+note right of signer : Canonicaliza XML y genera firma\nXMLDSig enveloped con llave privada RSA
+signer --> client : XML firmado con <Signature>
+deactivate signer
+
+client -> trans : send(POST /DTEWS/GetTokenFromSeed.jws, body = xml_firmado)
+activate trans
+trans -> sii : HTTP POST /DTEWS/GetTokenFromSeed.jws
+activate sii
+sii --> trans : 200 OK (XML con <RESP_BODY><TOKEN>ABCDEF123456</TOKEN></RESP_BODY>)
+deactivate sii
+trans --> client : Response (XML Token)
+deactivate trans
+
+client -> client : auth::extraer_token(xml) -> Token("ABCDEF123456")
+client --> app : Ok(Token("ABCDEF123456"))
+deactivate client
+
+note over app, sii : El token obtenido tiene una vigencia estándar de 1 hora\ny se utiliza en los encabezados HTTP o cookies de envíos y consultas.
+@enduml

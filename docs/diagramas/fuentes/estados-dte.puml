@@ -1,0 +1,36 @@
+@startuml estados-dte
+!include ../../plantilla/estilo.puml
+title Diagrama de estados — Ciclo de vida de un Documento Tributario (DTE)
+
+[*] --> Borrador : Construcción con Builder tipado (FacturaAfecta, Boleta, etc.)
+
+state Borrador {
+  [*] --> DatosValidados : Valida RUT, IVA 19%, montos y referencias
+}
+
+Borrador --> Timbrado : Invocación dte.timbrar(&caf, folio, &clock)
+note right of Timbrado : Contiene nodo <TED>\ncon firma RSA-SHA1\ny datos para PDF417
+
+Timbrado --> Firmado : Invocación dte_timbrado.firmar(&signer)
+note right of Firmado : Contiene firma XMLDSig\nenveloped con Certificado X.509
+
+Firmado --> Empaquetado : Agregado a sobre EnvioDte o EnvioBoleta
+Empaquetado --> Enviado : Subida multipart con Track ID asignado
+
+state Enviado {
+  [*] --> EsperandoRevision
+  EsperandoRevision --> RevisionSII
+}
+
+Enviado --> AceptadoSII : SII aprueba documento (EstadoEnvio::Aceptado)
+Enviado --> RechazadoSII : SII rechaza documento (EstadoEnvio::Rechazado)
+
+AceptadoSII --> Cedido : Cesión electrónica de crédito (AEC / Factoring) <<planificado>>
+AceptadoSII --> Anulado : Anulación mediante Nota de Crédito (TipoDte::NotaCredito = 61)
+
+RechazadoSII --> Corregido : Corrección de datos o folio en nueva emisión
+Corregido --> Borrador
+
+Cedido --> [*]
+Anulado --> [*]
+@enduml
