@@ -1,4 +1,4 @@
-//! Sans-IO simulation core for Chilean SII endpoints (`docs/simulator-spec.md` §1).
+//! Sans-IO simulation core for Chilean SII endpoints (`docs/md/simulator-spec.md` §1).
 
 use crate::error::Result;
 use crate::scenario::{Scenario, ScenarioConfig, TrackStatusConfig};

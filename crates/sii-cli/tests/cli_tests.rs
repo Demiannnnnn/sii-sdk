@@ -1,4 +1,4 @@
-//! End-to-end integration tests for `sii-cli` (`docs/dte-spec.md`, `tasks/cli/task-01-cli.md`).
+//! End-to-end integration tests for `sii-cli` (`docs/md/dte-spec.md`, `tasks/cli/task-01-cli.md`).
 
 use sii::signature::verify;
 use sii_sim::{HttpServer, Scenario, SiiSimulator};

@@ -3,7 +3,7 @@
 //! Provides the data model, XML serialization and digital signing for the Chilean SII
 //! Electronic Information of Purchase and Sales Ledgers (*Información Electrónica de
 //! Libros de Compra y Venta*, IECV), conforming to schema `LibroCV_v10.xsd` and
-//! `docs/dte-spec.md` §8.
+//! `docs/md/dte-spec.md` §8.
 //!
 //! A [`LibroCompraVenta`] encapsulates an `<EnvioLibro>` containing:
 //! - [`CaratulaLibro`]: Header metadata (tax period, issuer RUT, sender RUT, operation kind).
@@ -688,7 +688,7 @@ impl TotalesAccumulator {
 ///
 /// Wraps an `<EnvioLibro>` containing `<Caratula>`, optional `<ResumenPeriodo>`,
 /// `<Detalle>` records, and carries an enveloped `XMLDSig` signature over the
-/// `<EnvioLibro ID="...">` element (RF-01, RF-02, `docs/dte-spec.md` §8).
+/// `<EnvioLibro ID="...">` element (RF-01, RF-02, `docs/md/dte-spec.md` §8).
 ///
 /// # Example
 ///

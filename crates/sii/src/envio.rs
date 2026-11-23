@@ -2,7 +2,7 @@
 //!
 //! An envelope groups one or more already-signed DTEs from the same issuer, adds a
 //! `Caratula` (cover page with the per-type summary) and carries its own enveloped
-//! `XMLDSig` signature over the `SetDTE` element (RF-01..RF-04, `docs/dte-spec.md` §7).
+//! `XMLDSig` signature over the `SetDTE` element (RF-01..RF-04, `docs/md/dte-spec.md` §7).
 //!
 //! Boletas (types 39/41) travel in [`EnvioBoleta`]; every other DTE travels in
 //! [`EnvioDte`]. Mixing a boleta into [`EnvioDte`] (or vice versa) is rejected.

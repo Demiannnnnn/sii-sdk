@@ -9,7 +9,7 @@
 | **Prioridad** | P2 |
 
 ## 1. Contexto
-`docs/dte-spec.md` §8. Resumen mensual de documentos emitidos/recibidos, firmado.
+`docs/md/dte-spec.md` §8. Resumen mensual de documentos emitidos/recibidos, firmado.
 ## 2. Requerimientos
 - **RF-01 Modelo:** `LibroCompraVenta` con carátula (periodo, RUT, tipo de operación) y detalle/resumen.
 - **RF-02 XML + firma:** serialización al formato IECV del SII y firma XMLDSig (SIG-01).

@@ -1,6 +1,6 @@
 //! High-level Chilean SII client orchestrating authentication, upload, and status checks.
 //!
-//! Implements the complete communication lifecycle with the SII (`docs/dte-spec.md` §7, RF-02, ADR-04):
+//! Implements the complete communication lifecycle with the SII (`docs/md/dte-spec.md` §7, RF-02, ADR-04):
 //! 1. Seed acquisition and token exchange ([`SiiClient::obtener_token`]).
 //! 2. Envelope upload via multipart HTTP POST ([`SiiClient::enviar`]).
 //! 3. Asynchronous status query by Track ID ([`SiiClient::estado`]).

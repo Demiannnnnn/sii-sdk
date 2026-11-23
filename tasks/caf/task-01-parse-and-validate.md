@@ -9,7 +9,7 @@
 | **Prioridad** | P0 |
 
 ## 1. Contexto
-`docs/dte-spec.md` §5, `constraints.md` (CAF-01), `security-model.md`. El CAF trae el rango de folios y la llave RSA privada del timbre.
+`docs/md/dte-spec.md` §5, `constraints.md` (CAF-01), `security-model.md`. El CAF trae el rango de folios y la llave RSA privada del timbre.
 
 ## 2. Requerimientos
 - **RF-01 Parse:** `Caf::parse(&[u8]) -> Result<Caf, Error>` lee `AUTORIZACION/CAF`: `DA` (RE, RS, TD, RNG D/H, FA, RSAPK M/E, IDK), `FRMA`, `RSASK` (llave privada), `RSAPUBK`.
@@ -137,4 +137,4 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 - Ninguno. La tarea se completó en su totalidad.
 
 ### Desviaciones de la spec
-- Ninguna. Cumple estrictamente con `docs/dte-spec.md` §5, `constraints.md` (CAF-01, SEC-01, SEC-02) y `public-api.md`.
+- Ninguna. Cumple estrictamente con `docs/md/dte-spec.md` §5, `constraints.md` (CAF-01, SEC-01, SEC-02) y `public-api.md`.

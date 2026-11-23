@@ -33,7 +33,7 @@ Léelo al retomar en otra sesión o equipo. Resumen vivo del estado y la forma d
 ## Riesgos / cosas a vigilar
 
 - Fidelidad del XML del SII: los fixtures deben venir de ejemplos oficiales del SII (citar la fuente), no
-  inventados. Si un detalle del esquema no está en `docs/dte-spec.md`, agy debe reportarlo, no inventarlo.
+  inventados. Si un detalle del esquema no está en `docs/md/dte-spec.md`, agy debe reportarlo, no inventarlo.
 - RSA-SHA1 para el TED y la semilla es exigencia del SII (no es elección de seguridad del SDK): no "mejorar" a
-  SHA-256 ahí. La firma del DTE/Envío sí usa el algoritmo que el SII acepte (ver `docs/dte-spec.md`).
+  SHA-256 ahí. La firma del DTE/Envío sí usa el algoritmo que el SII acepte (ver `docs/md/dte-spec.md`).
 - Certificación real contra el SII: la hace el dueño (CERT-01); nunca se automatiza con secretos reales.

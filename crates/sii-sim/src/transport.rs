@@ -1,4 +1,4 @@
-//! Custom simulator transport implementations (`docs/simulator-spec.md` §4).
+//! Custom simulator transport implementations (`docs/md/simulator-spec.md` §4).
 
 use crate::simulator::SiiSimulator;
 use sii::error::Result as SiiResult;

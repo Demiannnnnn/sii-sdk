@@ -4,7 +4,7 @@ Reglas duras con ID. Una tarea las referencia; una revisión las verifica. Viola
 
 ## DTE — modelo y XML
 
-- **DTE-01** Cada tipo soportado (33, 34, 39, 41, 52, 56, 61) genera XML que valida contra su fixture de referencia (`docs/dte-spec.md` §3). Diferencia de bytes significativa = bug.
+- **DTE-01** Cada tipo soportado (33, 34, 39, 41, 52, 56, 61) genera XML que valida contra su fixture de referencia (`docs/md/dte-spec.md` §3). Diferencia de bytes significativa = bug.
 - **DTE-02** Las reglas tributarias se cumplen: factura afecta (33) calcula IVA 19 % sobre el neto; exenta (34/41) no lleva IVA; nota de crédito/débito (61/56) **exige** al menos una referencia (`Referencia`) a un documento previo.
 - **DTE-03** Los montos son enteros en pesos (CLP) sin decimales, salvo donde el SII permita decimales (cantidades, precios unitarios): ver `types::Monto`. Nunca `f64` para dinero.
 - **DTE-04** El `Rut` se valida con su dígito verificador (módulo 11) al construirse; un RUT inválido es `Err`, no un timbre inválido.
@@ -31,7 +31,7 @@ Reglas duras con ID. Una tarea las referencia; una revisión las verifica. Viola
 
 ## Licencias y calidad
 
-- **LEG-01** Se implementa desde `docs/dte-spec.md` y documentación pública del SII; NUNCA se copia código de LibreDTE u otras librerías (licencia incompatible o sin verificar).
+- **LEG-01** Se implementa desde `docs/md/dte-spec.md` y documentación pública del SII; NUNCA se copia código de LibreDTE u otras librerías (licencia incompatible o sin verificar).
 - **QA-01** Cero red real y cero secretos reales en tests: solo `sii-sim`, `MemoryTransport` y fixtures/llaves de prueba.
 - **QA-02** Los tests ejercitan comportamiento real (XML válido, firma que verifica, rechazo que se detecta), no asserts triviales.
 - **QA-03** La hora no se toma de `SystemTime::now()` en el núcleo; se inyecta para que los TED/semillas sean reproducibles en test.

@@ -9,7 +9,7 @@
 | **Prioridad** | P0 |
 
 ## 1. Contexto
-`docs/dte-spec.md` §3, `constraints.md` (DTE-01..04). Primer corte del modelo y la serialización XML, con los dos tipos más comunes.
+`docs/md/dte-spec.md` §3, `constraints.md` (DTE-01..04). Primer corte del modelo y la serialización XML, con los dos tipos más comunes.
 
 ## 2. Requerimientos
 - **RF-01 Modelo:** structs tipados para `Encabezado` (IdDoc, Emisor, Receptor, Totales), `Detalle` (1..n) y, para esta tarea, tipos 33 y 34. Builder que valide reglas: 33 calcula IVA 19 % (`IVA = round(MntNeto*0.19)`, `MntTotal` coherente); 34 sin IVA, montos en `MntExe` (DTE-02). Montos `Monto` (DTE-03), RUT validado (DTE-04).
@@ -165,4 +165,4 @@ test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 - Ninguno. La tarea se completó al 100 %.
 
 ### Desviaciones de la spec
-- En `docs/dte-spec.md` §3 línea 41 se menciona `NroLinData`, pero el esquema normativo `DTE_v10.xsd` del SII exige `NroLinDet`. Se implementó `NroLinDet` para cumplir estrictamente con el validador oficial del SII.
+- En `docs/md/dte-spec.md` §3 línea 41 se menciona `NroLinData`, pero el esquema normativo `DTE_v10.xsd` del SII exige `NroLinDet`. Se implementó `NroLinDet` para cumplir estrictamente con el validador oficial del SII.

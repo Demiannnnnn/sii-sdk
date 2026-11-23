@@ -1,0 +1,51 @@
+@startuml componentes
+!include ../../plantilla/estilo.puml
+title Arquitectura de componentes — sii-sdk (C4 nivel 2-3)
+
+package "Workspace sii-sdk (Rust 2024, MSRV 1.85)" {
+  package "crates/sii (Core sans-IO)" as crate_sii {
+    component "types & codes\n(Rut, Monto, TipoDte, Ambiente)" as mod_types
+    component "caf\n(Caf, CafKey, validación FRMA)" as mod_caf
+    component "dte\n(Builders 33, 34, 39, 41, 52, 56, 61)" as mod_dte
+    component "ted\n(Timbre, DD canónico, FRMT RSA-SHA1)" as mod_ted
+    component "signature\n(Signer, Certificate, C14N, XMLDSig)" as mod_sig
+    component "envio\n(EnvioDte, EnvioBoleta, carátula, firma SetDoc)" as mod_envio
+    component "libro\n(LibroCompraVenta, IECV mensual)" as mod_libro
+    component "auth\n(Semilla, SolicitudToken, Token)" as mod_auth
+    component "client\n(SiiClient<T>, TrackId, EstadoEnvio)" as mod_client
+    component "transport\n(Transport trait, MemoryTransport)" as mod_trans
+    component "http\n[feature: http]\n(HttpTransport con ureq)" as mod_http
+    component "pkcs12\n[feature: pkcs12]\n(SiiIdentity con p12)" as mod_pkcs12
+  }
+
+  package "crates/sii-sim (Simulador local)" as crate_sim {
+    component "Simulador & Escenarios\n(CrSeed, GetToken, DTEUpload, QueryEstUp)" as sim_engine
+    component "HTTP Server loopback\n(127.0.0.1:8080)" as sim_http
+  }
+
+  package "crates/sii-cli (Herramienta CLI)" as crate_cli {
+    component "bin sii\n(comandos dte, envio, libro, --json)" as cli_bin
+  }
+}
+
+cloud "Servicios Web SII\n(palena.sii.cl / maullin.sii.cl)" as sii_cloud
+
+mod_dte --> mod_types : utiliza
+mod_ted --> mod_caf : firma con llave RSA del CAF
+mod_dte --> mod_ted : incrusta TED
+mod_sig --> mod_dte : canonicaliza C14N y firma DTE
+mod_envio --> mod_dte : empaqueta DTEs firmados
+mod_envio --> mod_sig : firma sobre SetDoc
+mod_auth --> mod_sig : firma semilla con Signer
+mod_client --> mod_auth : flujo autenticación
+mod_client --> mod_envio : sube sobre EnvioDte
+mod_client --> mod_trans : ejecuta solicitudes
+mod_http ..|> mod_trans : implementa Transport
+mod_pkcs12 ..|> mod_sig : implementa Signer & Certificate
+
+cli_bin --> crate_sii : orquesta operaciones DTE
+cli_bin --> crate_sim : consume simulador en desarrollo
+mod_http --> sii_cloud : HTTPS POST/GET
+sim_engine ..|> mod_trans : implementa Transport
+sim_http --> sim_engine : despacha peticiones HTTP
+@enduml

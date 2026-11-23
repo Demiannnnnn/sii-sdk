@@ -2,7 +2,7 @@
 //!
 //! **Unofficial — not affiliated with the Chilean Internal Revenue Service (SII).**
 //!
-//! Local simulation of Chilean SII DTE endpoints and Web Services (`docs/simulator-spec.md`):
+//! Local simulation of Chilean SII DTE endpoints and Web Services (`docs/md/simulator-spec.md`):
 //! - [`SiiSimulator`]: sans-IO simulation core implementing [`sii::transport::Transport`].
 //! - [`Scenario`]: injectable failure and success scenarios (`Aceptado`, `Rechazado`, `EnProceso`, etc.).
 //! - [`HttpServer`]: local TCP HTTP server binding exclusively to loopback `127.0.0.1` (QA-01).

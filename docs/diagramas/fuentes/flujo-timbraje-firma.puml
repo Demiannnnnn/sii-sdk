@@ -1,0 +1,41 @@
+@startuml flujo-timbraje-firma
+!include ../../plantilla/estilo.puml
+title Flujo de proceso — Timbraje y Firma Digital XMLDSig
+
+start
+:Recibir datos del DTE a emitir (tipo, emisor, receptor, ítems, totales);
+:Verificar reglas de negocio (ej. IVA 19% en 33, referencias en 56/61);
+:Obtener autorización de folios (CAF) para el tipo de DTE;
+
+if (¿Folio solicitado dentro del rango [Desde..Hasta] del CAF?) then (sí)
+  :Continuar;
+else (no)
+  #Pink:Retornar Error::FolioOutOfRange;
+  stop
+endif
+
+if (¿Firma FRMA del CAF válida con llave pública del SII?) then (sí)
+  :Continuar;
+else (no)
+  #Pink:Retornar Error::CafSignature;
+  stop
+endif
+
+:Construir bloque de datos digitales <DD> canónico\n(RE, TD, F, FE, RR, RSR, MNT, IT1, CAF, TSTED);
+:Calcular Digest SHA-1 de <DD>;
+:Firmar Digest con llave RSA privada del CAF (RSA-SHA1);\n(Genera valor de firma digital FRMT);
+:Construir nodo <TED version="1.0"> con <DD> y <FRMT>;
+:Extraer bytes canónicos de <TED> para codificación en código de barras PDF417;
+:Incrustar <TED> dentro de <Documento ID="DTE-T{tipo}F{folio}">;
+
+:Canonicalizar nodo <Documento> con XML-C14N determinista;
+:Calcular Digest SHA-1 del <Documento> canónico (DigestValue);
+:Construir nodo <SignedInfo> referenciando ID del documento;
+:Canonicalizar <SignedInfo> con C14N;
+:Firmar <SignedInfo> canónico con Certificado Digital del contribuyente (SignatureValue);
+:Incrustar certificado X.509 en base64 dentro de <KeyInfo>;
+:Incrustar nodo <Signature> como hijo directo de <DTE>;
+
+:Retornar DteFirmado listo para transmisión o distribución;
+stop
+@enduml

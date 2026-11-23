@@ -1,0 +1,36 @@
+@startuml secuencia-consulta-estado
+!include ../../plantilla/estilo.puml
+title Secuencia — Consulta de Estado de Envío (Track ID)
+
+actor "Aplicación Emisora" as app
+participant "SiiClient<T>" as client
+participant "Transport" as trans
+participant "SII Web Services\n(QueryEstUp.jws)" as sii
+
+app -> client : estado(&track_id, &token)
+activate client
+
+client -> trans : send(POST /DTEWS/QueryEstUp.jws, soap_envelope)
+activate trans
+note right of trans : Envía envelope SOAP con método getEstUp\nconteniendo RutEmisor, DvEmisor, TrackId y Token
+
+trans -> sii : HTTP POST /DTEWS/QueryEstUp.jws
+activate sii
+sii --> trans : 200 OK (SOAP Envelope con <getEstUpReturn>)
+deactivate sii
+trans --> client : Response (XML SOAP)
+deactivate trans
+
+client -> client : Desescapar <getEstUpReturn> XML interno
+client -> client : client::classify_estado(xml_interno)
+
+alt Estado Aceptado (ESTADO = "EPR" con rechazados = 0, o "SOK")
+  client --> app : Ok(EstadoEnvio::Aceptado(DetalleEnvio))
+else Estado Rechazado (ESTADO = "REC" o "RFR" o rechazados > 0)
+  note right of client : ADR-04: El rechazo del SII es un valor\nde dominio, no un Error::Transport
+  client --> app : Ok(EstadoEnvio::Rechazado(DetalleEnvio))
+else Estado En Proceso (ESTADO = "EPR" en revisión / en cola)
+  client --> app : Ok(EstadoEnvio::EnProceso(DetalleEnvio))
+end
+deactivate client
+@enduml

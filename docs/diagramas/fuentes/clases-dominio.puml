@@ -1,0 +1,154 @@
+@startuml clases-dominio
+!include ../../plantilla/estilo.puml
+title Modelo de clases y tipos del dominio — sii
+
+package "types & codes" {
+  class Rut {
+    - number: u32
+    - dv: char
+    + new(number: u32, dv: char): Result<Rut, Error>
+    + parse(s: &str): Result<Rut, Error>
+    + format_with_dots(): String
+  }
+
+  class Monto {
+    - pesos: i64
+    + from_pesos(pesos: i64): Monto
+    + iva_19(): Result<Monto, Error>
+    + add_monto(other: Monto): Result<Monto, Error>
+    + as_pesos(): i64
+  }
+
+  enum TipoDte {
+    FacturaAfecta = 33
+    FacturaExenta = 34
+    Boleta = 39
+    BoletaExenta = 41
+    GuiaDespacho = 52
+    NotaDebito = 56
+    NotaCredito = 61
+    + requires_reference(): bool
+    + is_boleta(): bool
+  }
+
+  enum Ambiente {
+    Certificacion
+    Produccion
+    + sem_url(): &str
+    + token_url(): &str
+    + upload_url(): &str
+    + estado_url(): &str
+  }
+}
+
+package "caf & ted" {
+  class Caf {
+    - rng_desde: u64
+    - rng_hasta: u64
+    - tipo_dte: TipoDte
+    - rut_emisor: Rut
+    + parse(xml: &[u8]): Result<Caf, Error>
+    + contains_folio(folio: u64): bool
+    + verify_sii_signature(sii_pub_key: &RsaPublicKey): Result<(), Error>
+    + sign_ted(dd_bytes: &[u8]): Result<Vec<u8>, Error>
+  }
+
+  class Ted {
+    - dd_xml: String
+    - frmt_base64: String
+    + to_xml(): String
+    + pdf417_data(): &[u8]
+  }
+}
+
+package "dte & envio" {
+  class Dte {
+    - encabezado: Encabezado
+    - detalles: Vec<Detalle>
+    - referencias: Vec<Referencia>
+    + to_xml(): Result<Vec<u8>, Error>
+    + timbrar(caf: &Caf, folio: u64, clock: &dyn Clock): Result<DteTimbrado, Error>
+  }
+
+  class DteTimbrado {
+    - dte: Dte
+    - ted: Ted
+    + firmar(signer: &dyn Signer): Result<DteFirmado, Error>
+    + ted_pdf417_data(): &[u8]
+  }
+
+  class DteFirmado {
+    - xml_firmado: Vec<u8>
+    + as_bytes(): &[u8]
+  }
+
+  class EnvioDte {
+    - caratula: Caratula
+    - dtes: Vec<DteFirmado>
+    + nuevo(emisor: Rut, receptor: Rut, amb: Ambiente): Self
+    + agregar_dte(dte: DteFirmado): Result<(), Error>
+    + firmar(signer: &dyn Signer): Result<Vec<u8>, Error>
+  }
+}
+
+package "signature & auth" {
+  interface Signer {
+    + sign(data: &[u8], algo: DigestAlgorithm): Result<Vec<u8>, Error>
+  }
+
+  interface Certificate {
+    + cert_der(): &[u8]
+    + x509_certificate_base64(): Result<String, Error>
+  }
+
+  class Token {
+    - token: String
+    + as_str(): &str
+  }
+}
+
+package "client & transport" {
+  interface Transport {
+    + send(request: Request): Result<Response, Error>
+  }
+
+  class SiiClient<T: Transport> {
+    - ambiente: Ambiente
+    - transport: T
+    + new(ambiente: Ambiente, transport: T): Self
+    + obtener_token(signer: &dyn Signer): Result<Token, Error>
+    + enviar(envio_xml: &[u8], token: &Token): Result<TrackId, Error>
+    + estado(track_id: &TrackId, token: &Token): Result<EstadoEnvio, Error>
+  }
+
+  enum EstadoEnvio {
+    Aceptado(DetalleEnvio)
+    Rechazado(DetalleEnvio)
+    EnProceso(DetalleEnvio)
+  }
+
+  class DetalleEnvio {
+    + track_id: Option<TrackId>
+    + estado: String
+    + glosa: String
+    + informados: Option<u32>
+    + aceptados: Option<u32>
+    + rechazados: Option<u32>
+    + reparos: Option<u32>
+  }
+}
+
+Dte --> Ted : contiene
+Dte --> Rut : emisor / receptor
+Dte --> Monto : totales / ítems
+Dte --> TipoDte : tipo de documento
+DteTimbrado --> Dte : envuelve
+DteTimbrado --> Ted : asocia
+DteFirmado --> DteTimbrado : firma XMLDSig
+EnvioDte --> DteFirmado : agrupa
+Caf --> TipoDte : tipo autorizado
+Caf ..|> Signer : firma RSA-SHA1 TED
+SiiClient --> Transport : usa
+SiiClient --> EstadoEnvio : clasifica respuesta
+EstadoEnvio --> DetalleEnvio : detalla
+@enduml

@@ -9,7 +9,7 @@
 | **Prioridad** | P0 |
 
 ## 1. Contexto
-`docs/dte-spec.md` §4, `constraints.md` (TED-01, TED-02). El timbre se firma con la llave del CAF usando RSA-SHA1 (exigencia del SII, no se cambia).
+`docs/md/dte-spec.md` §4, `constraints.md` (TED-01, TED-02). El timbre se firma con la llave del CAF usando RSA-SHA1 (exigencia del SII, no se cambia).
 
 ## 2. Requerimientos
 - **RF-01 DD:** construir la cadena canónica `DD` con exactamente los campos del SII (RE, TD, F, FE, RR, RSR, MNT, IT1, CAF, TSTED), byte a byte igual al formato oficial. Hora inyectada (QA-03).

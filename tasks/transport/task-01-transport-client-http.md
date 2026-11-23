@@ -9,7 +9,7 @@
 | **Prioridad** | P1 |
 
 ## 1. Contexto
-`architecture.md` §1/§3, `docs/dte-spec.md` §7, ADR-04. La red vive detrás de `trait Transport`; el núcleo sigue sans-IO.
+`architecture.md` §1/§3, `docs/md/dte-spec.md` §7, ADR-04. La red vive detrás de `trait Transport`; el núcleo sigue sans-IO.
 ## 2. Requerimientos
 - **RF-01 Transport:** `trait Transport` (enviar request → response, sans-IO del lado del núcleo) + `MemoryTransport` para tests.
 - **RF-02 SiiClient:** `SiiClient::<T: Transport>::new(ambiente, transport)` con `obtener_token(&dyn Signer)`, `enviar(&EnvioDte, &Token) -> Result<TrackId, Error>`, `estado(TrackId, &Token) -> Result<EstadoEnvio, Error>`. `EstadoEnvio` = `Aceptado`/`Rechazado`/`EnProceso` + detalle; **rechazo es valor, no `Err`** (ADR-04).
