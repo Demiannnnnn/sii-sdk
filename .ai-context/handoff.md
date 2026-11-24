@@ -6,8 +6,10 @@ Léelo al retomar en otra sesión o equipo. Resumen vivo del estado y la forma d
 
 - **11 tareas de código integradas** en `develop-AGENTS` (128 tests): INFRA-01, CORE-01, CAF-01, DTE-01, DTE-02,
   TED-01, SIG-01, AUTH-01, ENVIO-01, CERT-LOADER-01, LIBRO-01, TRANSPORT-01. Ver `implementation-status.md`.
-- **Siguiente:** SIM-01 (contrato del simulador documentado en `implementation-status.md`) → CLI-01 → DOCS-01.
-  CERT-99 lo hace el dueño con certificado y CAF reales.
+- **2026-11-24:** SIM-01, CLI-01, DOCS-01 y HDOC-01 también integrados (el índice estaba atrasado; corregido).
+- **Siguiente:** el dueño publica en crates.io (`docs/md/release.md`) y hace CERT-99 con certificado y CAF reales.
+  Después: tareas nuevas en `rework` y `f29-iva` para usar `sii` (decisión del dueño 2026-11-24: f29 espera la
+  publicación, sin dependencia git). Pendientes de agy (modelo Claude, cuota desde 2026-11-28): HDOC-02..04.
 - ENVIO-01 y CERT-LOADER-01 los implementó Claude por el respaldo de cuota (CLAUDE.md); el resto, agy.
 - Lecciones de merge: ramas paralelas chocan de forma aditiva en `lib.rs`, `error.rs`, `Cargo.toml` y
   `Cargo.lock` — combinar sin duplicar variantes/exports y regenerar el lock con `cargo generate-lockfile`.
